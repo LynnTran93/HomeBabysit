@@ -35,8 +35,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Bookings Table Columns
     public static final String COLUMN_BOOKING_ID = "booking_id";
-    public static final String COLUMN_PARENT_ID = "parent_id";
-    public static final String COLUMN_BABYSITTER_ID = "babysitter_id";
     public static final String COLUMN_BOOKING_DATE = "date";
     public static final String COLUMN_BOOKING_TIME_SLOT = "time_slot";  // New
     public static final String COLUMN_BOOKING_STATUS = "status";  // New
@@ -65,12 +63,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // SQL to Create Bookings Table
     private static final String CREATE_TABLE_BOOKINGS = "CREATE TABLE " + TABLE_BOOKINGS + "("
             + COLUMN_BOOKING_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + COLUMN_PARENT_ID + " INTEGER, "
+            + COLUMN_USER_ID + " INTEGER, "
             + COLUMN_BABYSITTER_ID + " INTEGER, "
             + COLUMN_BOOKING_DATE + " TEXT, "
             + COLUMN_BOOKING_TIME_SLOT + " TEXT, "
             + COLUMN_BOOKING_STATUS + " TEXT, "
-            + "FOREIGN KEY (" + COLUMN_PARENT_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), "
+            + "FOREIGN KEY (" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), "
             + "FOREIGN KEY (" + COLUMN_BABYSITTER_ID + ") REFERENCES " + TABLE_BABYSITTERS + "(" + COLUMN_BABYSITTER_ID + "))";
 
     public DatabaseHelper(Context context) {
