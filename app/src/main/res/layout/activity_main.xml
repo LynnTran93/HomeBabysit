@@ -9,16 +9,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome to the Main Screen!"
+        android:text="Welcome to Homebabysit App!"
         android:textSize="18sp"
         android:layout_gravity="center"
         android:layout_marginBottom="24dp" />
-
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:layout_gravity="center" />
 
 </LinearLayout>
