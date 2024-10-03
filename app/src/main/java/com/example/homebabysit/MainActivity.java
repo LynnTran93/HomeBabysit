@@ -1,6 +1,10 @@
 package com.example.homebabysit;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.content.Intent;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +23,30 @@ public class MainActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        Button parent_profile_btn = findViewById(R.id.parent_profile_button);
+        parent_profile_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = "test@test.com";
+
+                Intent goToParentProfile = new Intent(MainActivity.this, ParentProfileActivity.class);
+                goToParentProfile.putExtra("EMAIL", email);
+                startActivity(goToParentProfile);
+            }
+        });
+
+        Button babysitter_profile_btn = findViewById(R.id.babysitter_profile_button);
+        babysitter_profile_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = "test@test.com";
+
+                Intent goToBabysitterProfile = new Intent(MainActivity.this, BabysitterProfileActivity.class);
+                goToBabysitterProfile.putExtra("EMAIL", email);
+                startActivity(goToBabysitterProfile);
+            }
         });
     }
 }
