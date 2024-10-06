@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,11 +26,14 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        dbHelper = new DatabaseHelper(this);
+
         Button parent_profile_btn = findViewById(R.id.parent_profile_button);
         parent_profile_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = "test@test.com";
+                String email = "testparent@test.com";
+                dbHelper.insertTestParentData();
 
                 Intent goToParentProfile = new Intent(MainActivity.this, ParentProfileActivity.class);
                 goToParentProfile.putExtra("EMAIL", email);
@@ -41,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
         babysitter_profile_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = "test@test.com";
+                String email = "testbabysitter@test.com";
+                dbHelper.insertTestBabysitterData();
 
                 Intent goToBabysitterProfile = new Intent(MainActivity.this, BabysitterProfileActivity.class);
                 goToBabysitterProfile.putExtra("EMAIL", email);

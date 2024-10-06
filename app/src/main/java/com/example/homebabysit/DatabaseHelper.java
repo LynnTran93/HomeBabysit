@@ -9,7 +9,7 @@ import android.database.Cursor;
 public class DatabaseHelper extends SQLiteOpenHelper {
     // Database Name and Version
     private static final String DATABASE_NAME = "homebabysit.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Table Names
     public static final String TABLE_USERS = "users";
@@ -28,6 +28,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Babysitters Table Columns
     public static final String COLUMN_BABYSITTER_ID = "babysitter_id";
     public static final String COLUMN_BABYSITTER_NAME = "name";
+    public static final String COLUMN_BABYSITTER_EMAIL = "email";
     public static final String COLUMN_BABYSITTER_QUALIFICATIONS = "qualifications";  // New
     public static final String COLUMN_BABYSITTER_EXPERIENCE = "experience";
     public static final String COLUMN_BABYSITTER_RATING = "rating";
@@ -55,6 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_BABYSITTERS = "CREATE TABLE " + TABLE_BABYSITTERS + "("
             + COLUMN_BABYSITTER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + COLUMN_BABYSITTER_NAME + " TEXT, "
+            + COLUMN_BABYSITTER_EMAIL + " TEXT, "
             + COLUMN_BABYSITTER_QUALIFICATIONS + " TEXT, "
             + COLUMN_BABYSITTER_EXPERIENCE + " INTEGER, "
             + COLUMN_BABYSITTER_RATING + " REAL, "
@@ -96,15 +98,74 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public Boolean updateParentProfile(String name, String email, String location, int childrenNum, String preferences) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        // validate email
+    public boolean isParentExists(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_EMAIL + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{email});
+        boolean exists = (cursor.getCount() > 0);
+        cursor.close();
+        return exists;
+    }
 
-        if (cursor != null && cursor.moveToFirst()) {
-            // if email is valid, update the profile
+    public void insertTestParentData() {
+        if (!isParentExists("testuser@example.com")) {
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_USER_NAME, "Test User");
+            values.put(COLUMN_USER_EMAIL, "testparent@test.com");
+            values.put(COLUMN_USER_PASSWORD, "123456");
+            values.put(COLUMN_USER_LOCATION, "Test City");
+            values.put(COLUMN_USER_CHILDREN, 2);
+            values.put(COLUMN_USER_PREFERENCES, "No Allergies");
+
+            db.insert(TABLE_USERS, null, values);
+        }
+    }
+
+    public boolean isBabysitterExists(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_BABYSITTERS + " WHERE " + COLUMN_BABYSITTER_EMAIL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email});
+        boolean exists = (cursor.getCount() > 0);
+        cursor.close();
+        return exists;
+    }
+
+    public void insertTestBabysitterData() {
+        if (!isBabysitterExists("testbabysitter@example.com")) {
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_BABYSITTER_NAME, "Test Babysitter");
+            values.put(COLUMN_BABYSITTER_EMAIL, "testbabysitter@test.com");
+            values.put(COLUMN_BABYSITTER_QUALIFICATIONS, "CPR, First Aid");
+            values.put(COLUMN_BABYSITTER_EXPERIENCE, 5);
+            values.put(COLUMN_BABYSITTER_RATE, 25.0);
+            values.put(COLUMN_BABYSITTER_AVAILABILITY, "Weekdays 9am-5pm");
+
+            db.insert(TABLE_BABYSITTERS, null, values);
+        }
+    }
+
+    public Cursor getParentByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_EMAIL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email});
+        return cursor;
+    }
+
+    public Cursor getBabysitterByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_BABYSITTERS + " WHERE " + COLUMN_BABYSITTER_EMAIL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email});
+        return cursor;
+    }
+
+    public Boolean updateParentProfile(String name, String email, String location, int childrenNum, String preferences) {
+        if (isParentExists(email)) {
+            SQLiteDatabase db = this.getWritableDatabase();
+
             ContentValues values = new ContentValues();
             values.put(COLUMN_USER_NAME, name);
             values.put(COLUMN_USER_LOCATION, location);
@@ -112,24 +173,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(COLUMN_USER_PREFERENCES, preferences);
 
             db.update(TABLE_USERS, values, COLUMN_USER_EMAIL + " = ?", new String[]{email});
-
-            cursor.close();
             return true;
-        } else {
-            if (cursor != null) cursor.close();
-            return false;
         }
+        return false;
     }
 
     public Boolean updateBabysitterProfile(String name, String email, String qualifications, int experience, double hourly_rates, String availability) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        if (isBabysitterExists(email)) {
+            SQLiteDatabase db = this.getWritableDatabase();
 
-        // validate email
-        String query = "SELECT * FROM " + TABLE_BABYSITTERS + " WHERE " + COLUMN_USER_EMAIL + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{email});
-
-        if (cursor != null && cursor.moveToFirst()) {
-            // if email is valid, update the profile
             ContentValues values = new ContentValues();
             values.put(COLUMN_BABYSITTER_NAME, name);
             values.put(COLUMN_BABYSITTER_QUALIFICATIONS, qualifications);
@@ -137,13 +189,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(COLUMN_BABYSITTER_RATE, hourly_rates);
             values.put(COLUMN_BABYSITTER_AVAILABILITY, availability);
 
-            db.update(TABLE_BABYSITTERS, values, COLUMN_USER_EMAIL + " = ?", new String[]{email});
-
-            cursor.close();
+            db.update(TABLE_BABYSITTERS, values, COLUMN_BABYSITTER_EMAIL + " = ?", new String[]{email});
             return true;
-        } else {
-            if (cursor != null) cursor.close();
-            return false;
         }
+        return false;
     }
 }

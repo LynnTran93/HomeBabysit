@@ -1,6 +1,7 @@
 package com.example.homebabysit;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,6 +23,7 @@ public class BabysitterProfileActivity extends AppCompatActivity {
     private EditText availability;
     private DatabaseHelper databaseHelper;
     private Button profile_update_btn;
+    private Button profile_return_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class BabysitterProfileActivity extends AppCompatActivity {
 
         // Initialize UI elements and the DatabaseHelper
         profile_update_btn = findViewById(R.id.profile_update_button);
+        profile_return_btn = findViewById(R.id.profile_return_button);
         name = findViewById(R.id.name);
         emailField = findViewById(R.id.email);
         qualifications = findViewById(R.id.qualifications);
@@ -44,6 +47,9 @@ public class BabysitterProfileActivity extends AppCompatActivity {
         emailField.setEnabled(false);
 
         databaseHelper = new DatabaseHelper(this);
+
+        // Load existing babysitter data
+        loadBabysitterData(email);
 
         // Initially disable the button
         profile_update_btn.setEnabled(false);
@@ -71,6 +77,35 @@ public class BabysitterProfileActivity extends AppCompatActivity {
                 }
             }
         });
+
+        profile_return_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish(); // Closes this activity and returns to the previous one
+            }
+        });
+    }
+
+    private void loadBabysitterData(String email) {
+        Cursor cursor = databaseHelper.getBabysitterByEmail(email);
+        if (cursor != null && cursor.moveToFirst()) {
+            // Retrieve data from cursor
+            String retrievedName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_NAME));
+            String retrievedQualifications = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_QUALIFICATIONS));
+            int retrievedExperience = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_EXPERIENCE));
+            double retrievedHourlyRates = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_RATE));
+            String retrievedAvailability = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_AVAILABILITY));
+
+            // Set the retrieved data to the EditTexts
+            name.setText(retrievedName);
+            qualifications.setText(retrievedQualifications);
+            experience.setText(String.valueOf(retrievedExperience));
+            hourly_rates.setText(String.valueOf(retrievedHourlyRates));
+            availability.setText(retrievedAvailability);
+
+            // Close cursor
+            cursor.close();
+        }
     }
 
     // TextWatcher to monitor input changes

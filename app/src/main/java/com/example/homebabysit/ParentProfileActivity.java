@@ -1,6 +1,7 @@
 package com.example.homebabysit;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.Editable;
@@ -20,6 +21,7 @@ public class ParentProfileActivity extends AppCompatActivity {
     private EditText preferences;
     private DatabaseHelper databaseHelper;
     private Button profile_update_btn;
+    private Button profile_return_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,7 @@ public class ParentProfileActivity extends AppCompatActivity {
 
         // Initialize UI elements and the DatabaseHelper
         profile_update_btn = findViewById(R.id.profile_update_button);
+        profile_return_btn = findViewById(R.id.profile_return_button);
         name = findViewById(R.id.name);
         emailField = findViewById(R.id.email);
         location = findViewById(R.id.location);
@@ -41,6 +44,9 @@ public class ParentProfileActivity extends AppCompatActivity {
         emailField.setEnabled(false); // Email field is read-only
 
         databaseHelper = new DatabaseHelper(this);
+
+        // Load existing parent data
+        loadParentData(email);
 
         // Initially disable the button
         profile_update_btn.setEnabled(false);
@@ -66,6 +72,33 @@ public class ParentProfileActivity extends AppCompatActivity {
                 }
             }
         });
+
+        profile_return_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish(); // Closes this activity and returns to the previous one
+            }
+        });
+    }
+
+    private void loadParentData(String email) {
+        Cursor cursor = databaseHelper.getParentByEmail(email);
+        if (cursor != null && cursor.moveToFirst()) {
+            // Retrieve data from cursor
+            String retrievedName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_NAME));
+            String retrievedLocation = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_LOCATION));
+            int retrievedChildrenNum = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_CHILDREN));
+            String retrievedPreferences = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_PREFERENCES));
+
+            // Set the retrieved data to the EditTexts
+            name.setText(retrievedName);
+            location.setText(retrievedLocation);
+            childrenNum.setText(String.valueOf(retrievedChildrenNum));
+            preferences.setText(retrievedPreferences);
+
+            // Close cursor
+            cursor.close();
+        }
     }
 
     // TextWatcher to monitor input changes
