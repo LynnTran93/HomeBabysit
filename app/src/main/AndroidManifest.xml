@@ -19,6 +19,11 @@
             android:name=".ParentProfileActivity"
             android:exported="false"
             android:theme="@style/Theme.HomeBabysit" />
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SignupActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
