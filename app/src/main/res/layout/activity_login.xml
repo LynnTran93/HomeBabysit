@@ -16,7 +16,7 @@
         android:textSize="30sp"
         android:textStyle="bold"
         android:textColor="#000000"
-        android:fontFamily="@fonts/SophiaFrancesca"
+        android:fontFamily="@font/dancingscript"
         android:layout_marginBottom="10dp"/>
 
     <TextView
@@ -26,7 +26,7 @@
         android:text="Babysitting Management made easy!"
         android:textSize="18sp"
         android:textColor="#000000"
-        android:fontFamily="@fonts/Optional"
+        android:fontFamily="@font/akayakanadaka"
         android:layout_marginBottom="30dp"/>
 
     <EditText
@@ -53,8 +53,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Log in"
-        android:layout_marginBottom="15dp"
-        android:background="@drawable/button_background"/>
+        android:textColor="#FFFFFF"
+        android:background="@drawable/button_background"
+        android:layout_marginBottom="15dp"/>
+
 
     <Button
         android:id="@+id/btnSignup"
