@@ -5,57 +5,54 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private EditText etUsername, etEmail, etPassword, etConfirmPassword;
-    private Button btnSignup, btnGoToLogin;
+    private EditText etFirstName, etLastName, etUsername, etPassword, etEmail;
+    private CheckBox cbCaregiver, cbSeekingCare;
+    private Button btnRegister, btnReturnToLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        etFirstName = findViewById(R.id.etFirstName);
+        etLastName = findViewById(R.id.etLastName);
         etUsername = findViewById(R.id.etUsername);
-        etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
-        etConfirmPassword = findViewById(R.id.etConfirmPassword);
-        btnSignup = findViewById(R.id.btnSignup);
-        btnGoToLogin = findViewById(R.id.btnGoToLogin);
+        etEmail = findViewById(R.id.etEmail);
+        cbCaregiver = findViewById(R.id.cbCaregiver);
+        cbSeekingCare = findViewById(R.id.cbSeekingCare);
+        btnRegister = findViewById(R.id.btnRegister);
+        btnReturnToLogin = findViewById(R.id.btnReturnToLogin);
 
-        btnSignup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = etUsername.getText().toString();
-                String email = etEmail.getText().toString();
-                String password = etPassword.getText().toString();
-                String confirmPassword = etConfirmPassword.getText().toString();
+        btnRegister.setOnClickListener(v -> {
+            String firstName = etFirstName.getText().toString();
+            String lastName = etLastName.getText().toString();
+            String username = etUsername.getText().toString();
+            String password = etPassword.getText().toString();
+            String email = etEmail.getText().toString();
+            boolean isCaregiver = cbCaregiver.isChecked();
+            boolean isSeekingCare = cbSeekingCare.isChecked();
 
-                if (TextUtils.isEmpty(username) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
-                    Toast.makeText(SignupActivity.this, "All fields are required", Toast.LENGTH_SHORT).show();
-                } else if (!password.equals(confirmPassword)) {
-                    Toast.makeText(SignupActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Proceed with signup (dummy for now)
-                    Toast.makeText(SignupActivity.this, "Signup Successful", Toast.LENGTH_SHORT).show();
-                    // Redirect to LoginActivity after signup
-                    Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();  // Close SignupActivity so the user cannot return using the back button
-                }
+            if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName) ||
+                    TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(email)) {
+                Toast.makeText(SignupActivity.this, "All fields are required", Toast.LENGTH_SHORT).show();
+            } else {
+                // Proceed with user registration
+                Toast.makeText(SignupActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+                finish();
             }
         });
 
-        btnGoToLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Redirect to LoginActivity when "Already have an account? Login" button is clicked
-                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
+        btnReturnToLogin.setOnClickListener(v -> {
+            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
         });
     }
 }
