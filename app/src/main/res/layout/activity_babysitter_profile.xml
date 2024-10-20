@@ -96,6 +96,35 @@
         android:inputType="text"
         android:paddingStart="20dp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rating"
+        android:paddingStart="20dp" />
+
+    <EditText
+        android:id="@+id/rating"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:enabled="false"
+        android:paddingStart="20dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Review number"
+        android:paddingStart="20dp" />
+
+    <EditText
+        android:id="@+id/review_num"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:enabled="false"
+        android:paddingStart="20dp" />
+
+
     <Button
         android:id="@+id/profile_update_button"
         android:layout_width="match_parent"

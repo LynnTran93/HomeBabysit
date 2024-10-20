@@ -38,4 +38,19 @@
         android:text="Haven't registered yet? Sign Up!"
         android:layout_marginTop="10dp" />
 
+
+    <Button
+        android:id="@+id/btnLoginAsParent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login As Parent (For Test Only)"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/btnLoginAsBabysitter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login As Babysitter (For Test Only)"
+        android:layout_marginTop="10dp" />
+
 </LinearLayout>

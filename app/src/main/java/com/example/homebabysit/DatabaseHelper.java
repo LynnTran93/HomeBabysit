@@ -9,12 +9,13 @@ import android.database.Cursor;
 public class DatabaseHelper extends SQLiteOpenHelper {
     // Database Name and Version
     private static final String DATABASE_NAME = "homebabysit.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Table Names
     public static final String TABLE_USERS = "users";
     public static final String TABLE_BABYSITTERS = "babysitters";
     public static final String TABLE_BOOKINGS = "bookings";
+    public static final String TABLE_RATING_REVIEWS = "rating_reviews";
 
     // Users Table Columns
     public static final String COLUMN_USER_ID = "user_id";
@@ -42,6 +43,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_BOOKING_TIME_SLOT = "time_slot";  // New
     public static final String COLUMN_BOOKING_STATUS = "status";  // New
 
+    // Rating_reviews Table Columns
+    public static final String COLUMN_RATING_REVIEW_ID = "rating_review_id";
+    public static final String COLUMN_RATING = "rating";
+    public static final String COLUMN_REVIEW = "review";
+    public static final String COLUMN_REVIEWER_ID = "reviewer_id";
+    public static final String COLUMN_REVIEWEE_ID = "reviewee_id";
+    public static final String COLUMN_STATUS = "status";
+
+
     // SQL to Create Users Table
     private static final String CREATE_TABLE_USERS = "CREATE TABLE " + TABLE_USERS + "("
             + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -59,7 +69,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_BABYSITTER_EMAIL + " TEXT, "
             + COLUMN_BABYSITTER_QUALIFICATIONS + " TEXT, "
             + COLUMN_BABYSITTER_EXPERIENCE + " INTEGER, "
-            + COLUMN_BABYSITTER_RATING + " REAL, "
             + COLUMN_BABYSITTER_AVAILABILITY + " TEXT, "
             + COLUMN_BABYSITTER_RATE + " REAL, "
             + COLUMN_BABYSITTER_PHOTO + " BLOB" + ")";  // Assuming profile photo is stored as a blob
@@ -75,6 +84,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "FOREIGN KEY (" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), "
             + "FOREIGN KEY (" + COLUMN_BABYSITTER_ID + ") REFERENCES " + TABLE_BABYSITTERS + "(" + COLUMN_BABYSITTER_ID + "))";
 
+    // SQL to Create Rating & Review Table
+    private static final String CREATE_TABLE_RATING_REVIEWS = "CREATE TABLE " + TABLE_RATING_REVIEWS + "("
+            + COLUMN_RATING_REVIEW_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COLUMN_RATING + " INTEGER, "  // should be 0 ~ 10
+            + COLUMN_REVIEW + " TEXT, "
+            + COLUMN_REVIEWER_ID + " INTEGER, "
+            + COLUMN_REVIEWEE_ID + " INTEGER, "
+            + COLUMN_STATUS + " INTEGER DEFAULT 0, "  // 0 stands for valid review
+            + "FOREIGN KEY (" + COLUMN_REVIEWER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), "
+            + "FOREIGN KEY (" + COLUMN_REVIEWEE_ID + ") REFERENCES " + TABLE_BABYSITTERS + "(" + COLUMN_BABYSITTER_ID + "))";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -85,6 +105,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_BABYSITTERS);
         db.execSQL(CREATE_TABLE_BOOKINGS);
+        db.execSQL(CREATE_TABLE_RATING_REVIEWS);
     }
 
     @Override
@@ -93,6 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BABYSITTERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOOKINGS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RATING_REVIEWS);
 
         // Create new tables
         onCreate(db);
@@ -194,4 +216,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return false;
     }
+
+    public double getRatingByBabysitterId(int babysitter_id){
+        double averageRating = 0.0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT AVG(" + COLUMN_RATING + ") AS average_rating FROM " + TABLE_RATING_REVIEWS +
+                " WHERE " + COLUMN_REVIEWEE_ID + " = ? AND " + COLUMN_STATUS + " = 0";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(babysitter_id)});
+
+        if (cursor.moveToFirst()) {
+            int columnIndex = cursor.getColumnIndexOrThrow("average_rating");
+            averageRating = cursor.getDouble(columnIndex);
+        }
+
+        cursor.close();
+        return averageRating;
+    }
+
+    public int getReviewsNumByBabysitterId(int babysitter_id){
+        int reviewsCount = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT COUNT(*) AS reviews_count FROM " + TABLE_RATING_REVIEWS +
+                " WHERE " + COLUMN_REVIEWEE_ID + " = ? AND " + COLUMN_STATUS + " = 0";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(babysitter_id)});
+
+        if (cursor.moveToFirst()) {
+            int columnIndex = cursor.getColumnIndexOrThrow("reviews_count");
+            reviewsCount = cursor.getInt(columnIndex);
+        }
+
+        cursor.close();
+        return reviewsCount;
+    }
+
 }

@@ -14,6 +14,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etEmail, etPassword;
     private Button btnLogin, btnGoToSignup;
 
+    private DatabaseHelper dbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +55,34 @@ public class LoginActivity extends AppCompatActivity {
                 // Redirect to SignupActivity when "Sign Up" button is clicked
                 Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        dbHelper = new DatabaseHelper(this);
+
+        Button parent_profile_btn = findViewById(R.id.btnLoginAsParent);
+        parent_profile_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = "testparent@test.com";
+                dbHelper.insertTestParentData();
+
+                Intent goToParentProfile = new Intent(LoginActivity.this, ParentProfileActivity.class);
+                goToParentProfile.putExtra("EMAIL", email);
+                startActivity(goToParentProfile);
+            }
+        });
+
+        Button babysitter_profile_btn = findViewById(R.id.btnLoginAsBabysitter);
+        babysitter_profile_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = "testbabysitter@test.com";
+                dbHelper.insertTestBabysitterData();
+
+                Intent goToBabysitterProfile = new Intent(LoginActivity.this, BabysitterProfileActivity.class);
+                goToBabysitterProfile.putExtra("EMAIL", email);
+                startActivity(goToBabysitterProfile);
             }
         });
     }

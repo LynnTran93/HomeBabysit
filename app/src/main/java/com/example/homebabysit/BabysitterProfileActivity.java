@@ -21,6 +21,8 @@ public class BabysitterProfileActivity extends AppCompatActivity {
     private EditText experience;
     private EditText hourly_rates;
     private EditText availability;
+    private EditText rating;
+    private EditText reviewNum;
     private DatabaseHelper databaseHelper;
     private Button profile_update_btn;
     private Button profile_return_btn;
@@ -42,6 +44,9 @@ public class BabysitterProfileActivity extends AppCompatActivity {
         experience = findViewById(R.id.experience);
         hourly_rates = findViewById(R.id.hourly_rates);
         availability = findViewById(R.id.availability);
+        rating = findViewById(R.id.rating);
+        reviewNum = findViewById(R.id.review_num);
+
 
         emailField.setText(email);
         emailField.setEnabled(false);
@@ -96,16 +101,26 @@ public class BabysitterProfileActivity extends AppCompatActivity {
             double retrievedHourlyRates = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_RATE));
             String retrievedAvailability = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_AVAILABILITY));
 
+            // Get babysitter_id
+            int babysitterId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_ID));
+
+            // Get rating and reviews number using the databaseHelper
+            double rating_avg = databaseHelper.getRatingByBabysitterId(babysitterId);
+            int review_num = databaseHelper.getReviewsNumByBabysitterId(babysitterId);
+
             // Set the retrieved data to the EditTexts
             name.setText(retrievedName);
             qualifications.setText(retrievedQualifications);
             experience.setText(String.valueOf(retrievedExperience));
             hourly_rates.setText(String.valueOf(retrievedHourlyRates));
             availability.setText(retrievedAvailability);
+            rating.setText(String.valueOf(rating_avg));
+            reviewNum.setText(String.valueOf(review_num));
 
             // Close cursor
             cursor.close();
         }
+
     }
 
     // TextWatcher to monitor input changes
