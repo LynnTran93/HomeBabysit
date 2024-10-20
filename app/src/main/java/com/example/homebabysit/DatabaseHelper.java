@@ -6,10 +6,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     // Database Name and Version
     private static final String DATABASE_NAME = "homebabysit.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     // Table Names
     public static final String TABLE_USERS = "users";
@@ -32,7 +39,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_BABYSITTER_EMAIL = "email";
     public static final String COLUMN_BABYSITTER_QUALIFICATIONS = "qualifications";  // New
     public static final String COLUMN_BABYSITTER_EXPERIENCE = "experience";
-    public static final String COLUMN_BABYSITTER_RATING = "rating";
     public static final String COLUMN_BABYSITTER_AVAILABILITY = "availability";  // New
     public static final String COLUMN_BABYSITTER_RATE = "hourly_rate";  // New
     public static final String COLUMN_BABYSITTER_PHOTO = "profile_photo";  // New
@@ -49,6 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_REVIEW = "review";
     public static final String COLUMN_REVIEWER_ID = "reviewer_id";
     public static final String COLUMN_REVIEWEE_ID = "reviewee_id";
+    public static final String COLUMN_REVIEW_TIME = "time";
     public static final String COLUMN_STATUS = "status";
 
 
@@ -91,6 +98,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_REVIEW + " TEXT, "
             + COLUMN_REVIEWER_ID + " INTEGER, "
             + COLUMN_REVIEWEE_ID + " INTEGER, "
+            + COLUMN_REVIEW_TIME + " TIME, "
             + COLUMN_STATUS + " INTEGER DEFAULT 0, "  // 0 stands for valid review
             + "FOREIGN KEY (" + COLUMN_REVIEWER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_USER_ID + "), "
             + "FOREIGN KEY (" + COLUMN_REVIEWEE_ID + ") REFERENCES " + TABLE_BABYSITTERS + "(" + COLUMN_BABYSITTER_ID + "))";
@@ -129,20 +137,75 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return exists;
     }
 
-    public void insertTestParentData() {
+    public void insertTestData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Random random = new Random();
+
         if (!isParentExists("testuser@example.com")) {
-            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues parentValues = new ContentValues();
 
-            ContentValues values = new ContentValues();
-            values.put(COLUMN_USER_NAME, "Test User");
-            values.put(COLUMN_USER_EMAIL, "testparent@test.com");
-            values.put(COLUMN_USER_PASSWORD, "123456");
-            values.put(COLUMN_USER_LOCATION, "Test City");
-            values.put(COLUMN_USER_CHILDREN, 2);
-            values.put(COLUMN_USER_PREFERENCES, "No Allergies");
+            parentValues.put(COLUMN_USER_NAME, "Test User");
+            parentValues.put(COLUMN_USER_EMAIL, "testparent@test.com");
+            parentValues.put(COLUMN_USER_PASSWORD, "123456");
+            parentValues.put(COLUMN_USER_LOCATION, "Test City");
+            parentValues.put(COLUMN_USER_CHILDREN, 2);
+            parentValues.put(COLUMN_USER_PREFERENCES, "No Allergies");
 
-            db.insert(TABLE_USERS, null, values);
+            db.insert(TABLE_USERS, null, parentValues);
         }
+
+        if (!isBabysitterExists("testbabysitter@example.com")) {
+            ContentValues babysitterValues = new ContentValues();
+
+            babysitterValues.put(COLUMN_BABYSITTER_NAME, "Test Babysitter");
+            babysitterValues.put(COLUMN_BABYSITTER_EMAIL, "testbabysitter@test.com");
+            babysitterValues.put(COLUMN_BABYSITTER_QUALIFICATIONS, "CPR, First Aid");
+            babysitterValues.put(COLUMN_BABYSITTER_EXPERIENCE, 5);
+            babysitterValues.put(COLUMN_BABYSITTER_RATE, 25.0);
+            babysitterValues.put(COLUMN_BABYSITTER_AVAILABILITY, "Weekdays 9am-5pm");
+
+            db.insert(TABLE_BABYSITTERS, null, babysitterValues);
+        }
+
+        Cursor parentCursor = getParentByEmail("testparent@test.com");
+        Cursor babysitterCursor = getBabysitterByEmail("testbabysitter@test.com");
+
+        if (parentCursor.moveToFirst() && babysitterCursor.moveToFirst()) {
+            int parentId = parentCursor.getInt(parentCursor.getColumnIndexOrThrow(COLUMN_USER_ID));
+            int babysitterId = babysitterCursor.getInt(babysitterCursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_ID));
+
+            ContentValues ratingReviewValues = generateRatingReviewValues(parentId, babysitterId, random);
+
+            db.insert(TABLE_RATING_REVIEWS, null, ratingReviewValues);
+        }
+
+        parentCursor.close();
+        babysitterCursor.close();
+    }
+
+    private ContentValues generateRatingReviewValues(int parentId, int babysitterId, Random random) {
+        int randomRating = random.nextInt(10) + 1;
+        String randomReview;
+
+        if (randomRating >= 8) {
+            randomReview = "Amazing babysitter! Would definitely hire again.";
+        } else if (randomRating >= 5) {
+            randomReview = "Babysitter was fine, nothing exceptional.";
+        } else {
+            randomReview = "Not very punctual, could have done better.";
+        }
+
+        ContentValues ratingReviewValues = new ContentValues();
+        ratingReviewValues.put(COLUMN_RATING, randomRating);
+        ratingReviewValues.put(COLUMN_REVIEW, randomReview);
+        ratingReviewValues.put(COLUMN_REVIEWER_ID, parentId);
+        ratingReviewValues.put(COLUMN_REVIEWEE_ID, babysitterId);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String currentTime = sdf.format(new Date());
+        ratingReviewValues.put(COLUMN_REVIEW_TIME, currentTime);
+        ratingReviewValues.put(COLUMN_STATUS, 0);
+
+        return ratingReviewValues;
     }
 
     public boolean isBabysitterExists(String email) {
@@ -154,34 +217,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return exists;
     }
 
-    public void insertTestBabysitterData() {
-        if (!isBabysitterExists("testbabysitter@example.com")) {
-            SQLiteDatabase db = this.getWritableDatabase();
-
-            ContentValues values = new ContentValues();
-            values.put(COLUMN_BABYSITTER_NAME, "Test Babysitter");
-            values.put(COLUMN_BABYSITTER_EMAIL, "testbabysitter@test.com");
-            values.put(COLUMN_BABYSITTER_QUALIFICATIONS, "CPR, First Aid");
-            values.put(COLUMN_BABYSITTER_EXPERIENCE, 5);
-            values.put(COLUMN_BABYSITTER_RATE, 25.0);
-            values.put(COLUMN_BABYSITTER_AVAILABILITY, "Weekdays 9am-5pm");
-
-            db.insert(TABLE_BABYSITTERS, null, values);
-        }
-    }
-
     public Cursor getParentByEmail(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_EMAIL + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{email});
-        return cursor;
+        return db.rawQuery(query, new String[]{email});
     }
 
     public Cursor getBabysitterByEmail(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_BABYSITTERS + " WHERE " + COLUMN_BABYSITTER_EMAIL + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{email});
-        return cursor;
+        return db.rawQuery(query, new String[]{email});
     }
 
     public Boolean updateParentProfile(String name, String email, String location, int childrenNum, String preferences) {
@@ -228,6 +273,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             int columnIndex = cursor.getColumnIndexOrThrow("average_rating");
             averageRating = cursor.getDouble(columnIndex);
+
+            averageRating = Math.round(averageRating * 100.0) / 100.0;
         }
 
         cursor.close();
@@ -249,6 +296,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         cursor.close();
         return reviewsCount;
+    }
+
+    public List<Review> getReviewsByBabysitterId(int babysitterId) {
+        List<Review> reviews = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // SQL query to get reviews for a specific babysitter, including reviewer name and review time
+        String query = "SELECT u." + COLUMN_USER_NAME + ", " +
+                COLUMN_REVIEW_TIME + ", " +
+                COLUMN_RATING + ", " +
+                COLUMN_REVIEW + " FROM " +
+                TABLE_RATING_REVIEWS + " rr " +
+                "JOIN " + TABLE_USERS + " u ON rr." + COLUMN_REVIEWER_ID + " = u." + COLUMN_USER_ID +
+                " WHERE rr." + COLUMN_REVIEWEE_ID + " = ? AND rr." + COLUMN_STATUS + " = 0";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(babysitterId)});
+
+        // Loop through the results and add reviews to the list
+        if (cursor.moveToFirst()) {
+            do {
+                String reviewerName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USER_NAME));
+                String reviewTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REVIEW_TIME));
+                int rating = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RATING));
+                String reviewText = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REVIEW));
+
+                Review review = new Review(reviewerName, reviewTime, rating, reviewText);
+                reviews.add(review);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return reviews;
     }
 
 }

@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String email = "testparent@test.com";
-                dbHelper.insertTestParentData();
+                dbHelper.insertTestData();
 
                 Intent goToParentProfile = new Intent(LoginActivity.this, ParentProfileActivity.class);
                 goToParentProfile.putExtra("EMAIL", email);
@@ -78,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String email = "testbabysitter@test.com";
-                dbHelper.insertTestBabysitterData();
+                dbHelper.insertTestData();
 
                 Intent goToBabysitterProfile = new Intent(LoginActivity.this, BabysitterProfileActivity.class);
                 goToBabysitterProfile.putExtra("EMAIL", email);

@@ -26,6 +26,7 @@ public class BabysitterProfileActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
     private Button profile_update_btn;
     private Button profile_return_btn;
+    private Button view_reviews_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class BabysitterProfileActivity extends AppCompatActivity {
         availability = findViewById(R.id.availability);
         rating = findViewById(R.id.rating);
         reviewNum = findViewById(R.id.review_num);
+        view_reviews_btn = findViewById(R.id.view_reviews_btn);
 
 
         emailField.setText(email);
@@ -87,6 +89,15 @@ public class BabysitterProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finish(); // Closes this activity and returns to the previous one
+            }
+        });
+
+        view_reviews_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(BabysitterProfileActivity.this, ReviewsListActivity.class);
+                intent.putExtra("BABYSITTER_ID", getBabysitterId());
+                startActivity(intent); // Launch the ReviewsListActivity to show reviews
             }
         });
     }
@@ -150,5 +161,15 @@ public class BabysitterProfileActivity extends AppCompatActivity {
         profile_update_btn.setEnabled(!input_name.isEmpty() && !input_qualifications.isEmpty()
                 && !input_experience.isEmpty() && !input_hourly_rates.isEmpty()
                 && !input_availability.isEmpty());
+    }
+
+    private int getBabysitterId() {
+        Cursor cursor = databaseHelper.getBabysitterByEmail(email);
+        int babysitterId = -1;
+        if (cursor != null && cursor.moveToFirst()) {
+            babysitterId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_ID));
+            cursor.close();
+        }
+        return babysitterId;
     }
 }
