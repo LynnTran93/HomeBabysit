@@ -18,6 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="24dp" />
 
+</LinearLayout>
     <Button
         android:id="@+id/parent_profile_button"
         android:layout_width="0dp"

@@ -12,7 +12,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.graphics.Insets;
 
 public class MainActivity extends AppCompatActivity {
-    private DatabaseHelper dbHelper;
 
     private static final int SPLASH_TIME_OUT = 5000; // 5000 milliseconds = 5 seconds
 
@@ -20,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+         // Splash Screen
 
         // Apply window insets listener
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
