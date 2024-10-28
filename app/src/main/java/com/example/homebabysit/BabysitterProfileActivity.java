@@ -21,9 +21,12 @@ public class BabysitterProfileActivity extends AppCompatActivity {
     private EditText experience;
     private EditText hourly_rates;
     private EditText availability;
+    private EditText rating;
+    private EditText reviewNum;
     private DatabaseHelper databaseHelper;
     private Button profile_update_btn;
     private Button profile_return_btn;
+    private Button view_reviews_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,10 @@ public class BabysitterProfileActivity extends AppCompatActivity {
         experience = findViewById(R.id.experience);
         hourly_rates = findViewById(R.id.hourly_rates);
         availability = findViewById(R.id.availability);
+        rating = findViewById(R.id.rating);
+        reviewNum = findViewById(R.id.review_num);
+        view_reviews_btn = findViewById(R.id.view_reviews_btn);
+
 
         emailField.setText(email);
         emailField.setEnabled(false);
@@ -84,6 +91,15 @@ public class BabysitterProfileActivity extends AppCompatActivity {
                 finish(); // Closes this activity and returns to the previous one
             }
         });
+
+        view_reviews_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(BabysitterProfileActivity.this, ReviewsListActivity.class);
+                intent.putExtra("BABYSITTER_ID", getBabysitterId());
+                startActivity(intent); // Launch the ReviewsListActivity to show reviews
+            }
+        });
     }
 
     private void loadBabysitterData(String email) {
@@ -96,16 +112,26 @@ public class BabysitterProfileActivity extends AppCompatActivity {
             double retrievedHourlyRates = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_RATE));
             String retrievedAvailability = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_AVAILABILITY));
 
+            // Get babysitter_id
+            int babysitterId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_ID));
+
+            // Get rating and reviews number using the databaseHelper
+            double rating_avg = databaseHelper.getRatingByBabysitterId(babysitterId);
+            int review_num = databaseHelper.getReviewsNumByBabysitterId(babysitterId);
+
             // Set the retrieved data to the EditTexts
             name.setText(retrievedName);
             qualifications.setText(retrievedQualifications);
             experience.setText(String.valueOf(retrievedExperience));
             hourly_rates.setText(String.valueOf(retrievedHourlyRates));
             availability.setText(retrievedAvailability);
+            rating.setText(String.valueOf(rating_avg));
+            reviewNum.setText(String.valueOf(review_num));
 
             // Close cursor
             cursor.close();
         }
+
     }
 
     // TextWatcher to monitor input changes
@@ -135,5 +161,15 @@ public class BabysitterProfileActivity extends AppCompatActivity {
         profile_update_btn.setEnabled(!input_name.isEmpty() && !input_qualifications.isEmpty()
                 && !input_experience.isEmpty() && !input_hourly_rates.isEmpty()
                 && !input_availability.isEmpty());
+    }
+
+    private int getBabysitterId() {
+        Cursor cursor = databaseHelper.getBabysitterByEmail(email);
+        int babysitterId = -1;
+        if (cursor != null && cursor.moveToFirst()) {
+            babysitterId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_ID));
+            cursor.close();
+        }
+        return babysitterId;
     }
 }

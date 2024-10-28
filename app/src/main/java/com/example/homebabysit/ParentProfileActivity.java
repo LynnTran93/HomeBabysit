@@ -40,6 +40,7 @@ public class ParentProfileActivity extends AppCompatActivity {
         childrenNum = findViewById(R.id.number_of_children);
         preferences = findViewById(R.id.babysitter_preferences);
 
+
         emailField.setText(email);
         emailField.setEnabled(false); // Email field is read-only
 
