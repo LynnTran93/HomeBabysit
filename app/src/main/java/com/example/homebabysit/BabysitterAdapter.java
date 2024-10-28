@@ -6,16 +6,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.BabysitterViewHolder> {
 
-    private List<String> babysitters;
+    private List<Babysitter> babysitters;
+    private List<Babysitter> originalBabysitters; // Stores the unfiltered list
     private final OnBabysitterClickListener onBabysitterClickListener;
-    private String selectedBabysitter;
 
-    public BabysitterAdapter(List<String> babysitters, OnBabysitterClickListener listener) {
-        this.babysitters = babysitters;
+    public BabysitterAdapter(List<Babysitter> babysitters, OnBabysitterClickListener listener) {
+        this.babysitters = new ArrayList<>(babysitters); // Initialize with a copy
+        this.originalBabysitters = new ArrayList<>(babysitters); // Keep a copy of the full list
         this.onBabysitterClickListener = listener;
     }
 
@@ -28,12 +30,9 @@ public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.Ba
 
     @Override
     public void onBindViewHolder(@NonNull BabysitterViewHolder holder, int position) {
-        String babysitter = babysitters.get(position);
-        holder.textView.setText(babysitter);
-        holder.itemView.setOnClickListener(v -> {
-            selectedBabysitter = babysitter;
-            onBabysitterClickListener.onClick(babysitter);
-        });
+        Babysitter babysitter = babysitters.get(position);
+        holder.textView.setText(babysitter.getName()); // Display babysitter's name
+        holder.itemView.setOnClickListener(v -> onBabysitterClickListener.onClick(babysitter));
     }
 
     @Override
@@ -41,13 +40,31 @@ public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.Ba
         return babysitters.size();
     }
 
-    public void updateList(List<String> newList) {
-        babysitters = newList;
+    // Method to filter the babysitters by experience level
+    public void filterByExperience(String experienceLevel) {
+        if (experienceLevel.equals("Any")) {
+            babysitters = new ArrayList<>(originalBabysitters); // Show all babysitters
+        } else {
+            List<Babysitter> filteredList = new ArrayList<>();
+            for (Babysitter babysitter : originalBabysitters) {
+                if (babysitter.getExperience().equalsIgnoreCase(experienceLevel)) {
+                    filteredList.add(babysitter);
+                }
+            }
+            babysitters = filteredList;
+        }
+        notifyDataSetChanged();
+    }
+
+    // Method to update the list when needed
+    public void updateList(List<Babysitter> newList) {
+        originalBabysitters = new ArrayList<>(newList); // Update the original list
+        babysitters = new ArrayList<>(newList); // Update the displayed list
         notifyDataSetChanged();
     }
 
     public interface OnBabysitterClickListener {
-        void onClick(String babysitter);
+        void onClick(Babysitter babysitter);
     }
 
     static class BabysitterViewHolder extends RecyclerView.ViewHolder {
