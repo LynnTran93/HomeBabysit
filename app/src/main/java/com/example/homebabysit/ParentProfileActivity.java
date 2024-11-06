@@ -40,7 +40,6 @@ public class ParentProfileActivity extends AppCompatActivity {
         childrenNum = findViewById(R.id.number_of_children);
         preferences = findViewById(R.id.babysitter_preferences);
 
-
         emailField.setText(email);
         emailField.setEnabled(false); // Email field is read-only
 
@@ -85,17 +84,17 @@ public class ParentProfileActivity extends AppCompatActivity {
     private void loadParentData(String email) {
         Cursor cursor = databaseHelper.getParentByEmail(email);
         if (cursor != null && cursor.moveToFirst()) {
-            // Retrieve data from cursor
-            String retrievedName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_NAME));
-            String retrievedLocation = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_LOCATION));
-            int retrievedChildrenNum = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_CHILDREN));
-            String retrievedPreferences = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_PREFERENCES));
+            // Retrieve column indices for each field
+            int nameIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_NAME);
+            int locationIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_LOCATION);
+            int childrenNumIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_CHILDREN);
+            int preferencesIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_PREFERENCES);
 
-            // Set the retrieved data to the EditTexts
-            name.setText(retrievedName);
-            location.setText(retrievedLocation);
-            childrenNum.setText(String.valueOf(retrievedChildrenNum));
-            preferences.setText(retrievedPreferences);
+            // Only set data if column indices are valid
+            if (nameIndex >= 0) name.setText(cursor.getString(nameIndex));
+            if (locationIndex >= 0) location.setText(cursor.getString(locationIndex));
+            if (childrenNumIndex >= 0) childrenNum.setText(String.valueOf(cursor.getInt(childrenNumIndex)));
+            if (preferencesIndex >= 0) preferences.setText(cursor.getString(preferencesIndex));
 
             // Close cursor
             cursor.close();
