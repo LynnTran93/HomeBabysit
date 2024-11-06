@@ -72,7 +72,6 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(goToBabysitterProfile);
             }
         });
-    }
 
         btnCantSignIn.setOnClickListener(v -> {
             // Handle password recovery
