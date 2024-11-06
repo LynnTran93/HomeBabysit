@@ -11,54 +11,70 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText etEmail, etPassword;
-    private Button btnLogin, btnGoToSignup;
+    private EditText etUsername, etPassword;
+    private Button btnLogin, btnSignup, btnCantSignIn;
+
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        etEmail = findViewById(R.id.etEmail);
+        etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
-        btnGoToSignup = findViewById(R.id.btnGoToSignup);
+        btnSignup = findViewById(R.id.btnSignup);
+        btnCantSignIn = findViewById(R.id.btnCantSignIn);
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = etEmail.getText().toString();
-                String password = etPassword.getText().toString();
+        btnLogin.setOnClickListener(v -> {
+            String username = etUsername.getText().toString();
+            String password = etPassword.getText().toString();
 
-                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-                    Toast.makeText(LoginActivity.this, "Email and Password are required", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Dummy authentication logic
-                    if (authenticateUser(email, password)) {
-                        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                        // Redirect to MainActivity after successful login
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();  // Close LoginActivity so the user cannot return using the back button
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
-                    }
-                }
+            if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+                Toast.makeText(LoginActivity.this, "Username and Password are required", Toast.LENGTH_SHORT).show();
+            } else {
+                // Perform actual login check
+                Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
             }
         });
 
-        btnGoToSignup.setOnClickListener(new View.OnClickListener() {
+        btnSignup.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+        });
+
+        dbHelper = new DatabaseHelper(this);
+
+        Button parent_profile_btn = findViewById(R.id.btnLoginAsParent);
+        parent_profile_btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                // Redirect to SignupActivity when "Sign Up" button is clicked
-                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-                startActivity(intent);
+            public void onClick(View view) {
+                String email = "testparent@test.com";
+                dbHelper.insertTestData();
+
+                Intent goToParentProfile = new Intent(LoginActivity.this, ParentProfileActivity.class);
+                goToParentProfile.putExtra("EMAIL", email);
+                startActivity(goToParentProfile);
             }
         });
-    }
 
-    private boolean authenticateUser(String email, String password) {
-        // Dummy check: In a real application, you would query your backend or database
-        return email.equals("user@example.com") && password.equals("password123");
+        Button babysitter_profile_btn = findViewById(R.id.btnLoginAsBabysitter);
+        babysitter_profile_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = "testbabysitter@test.com";
+                dbHelper.insertTestData();
+
+                Intent goToBabysitterProfile = new Intent(LoginActivity.this, BabysitterProfileActivity.class);
+                goToBabysitterProfile.putExtra("EMAIL", email);
+                startActivity(goToBabysitterProfile);
+            }
+        });
+
+        btnCantSignIn.setOnClickListener(v -> {
+            // Handle password recovery
+        });
     }
 }
