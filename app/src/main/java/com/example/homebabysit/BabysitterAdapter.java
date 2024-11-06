@@ -12,12 +12,10 @@ import java.util.List;
 public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.BabysitterViewHolder> {
 
     private List<Babysitter> babysitters;
-    private List<Babysitter> originalBabysitters; // Stores the unfiltered list
     private final OnBabysitterClickListener onBabysitterClickListener;
 
     public BabysitterAdapter(List<Babysitter> babysitters, OnBabysitterClickListener listener) {
-        this.babysitters = new ArrayList<>(babysitters); // Initialize with a copy
-        this.originalBabysitters = new ArrayList<>(babysitters); // Keep a copy of the full list
+        this.babysitters = new ArrayList<>(babysitters);
         this.onBabysitterClickListener = listener;
     }
 
@@ -31,7 +29,7 @@ public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.Ba
     @Override
     public void onBindViewHolder(@NonNull BabysitterViewHolder holder, int position) {
         Babysitter babysitter = babysitters.get(position);
-        holder.textView.setText(babysitter.getName()); // Display babysitter's name
+        holder.textView.setText(babysitter.getName());
         holder.itemView.setOnClickListener(v -> onBabysitterClickListener.onClick(babysitter));
     }
 
@@ -40,26 +38,8 @@ public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.Ba
         return babysitters.size();
     }
 
-    // Method to filter the babysitters by experience level
-    public void filterByExperience(String experienceLevel) {
-        if (experienceLevel.equals("Any")) {
-            babysitters = new ArrayList<>(originalBabysitters); // Show all babysitters
-        } else {
-            List<Babysitter> filteredList = new ArrayList<>();
-            for (Babysitter babysitter : originalBabysitters) {
-                if (babysitter.getExperience().equalsIgnoreCase(experienceLevel)) {
-                    filteredList.add(babysitter);
-                }
-            }
-            babysitters = filteredList;
-        }
-        notifyDataSetChanged();
-    }
-
-    // Method to update the list when needed
     public void updateList(List<Babysitter> newList) {
-        originalBabysitters = new ArrayList<>(newList); // Update the original list
-        babysitters = new ArrayList<>(newList); // Update the displayed list
+        babysitters = new ArrayList<>(newList);
         notifyDataSetChanged();
     }
 
