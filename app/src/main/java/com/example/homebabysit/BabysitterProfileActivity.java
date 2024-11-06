@@ -49,7 +49,6 @@ public class BabysitterProfileActivity extends AppCompatActivity {
         reviewNum = findViewById(R.id.review_num);
         view_reviews_btn = findViewById(R.id.view_reviews_btn);
 
-
         emailField.setText(email);
         emailField.setEnabled(false);
 
@@ -105,33 +104,36 @@ public class BabysitterProfileActivity extends AppCompatActivity {
     private void loadBabysitterData(String email) {
         Cursor cursor = databaseHelper.getBabysitterByEmail(email);
         if (cursor != null && cursor.moveToFirst()) {
-            // Retrieve data from cursor
-            String retrievedName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_NAME));
-            String retrievedQualifications = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_QUALIFICATIONS));
-            int retrievedExperience = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_EXPERIENCE));
-            double retrievedHourlyRates = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_RATE));
-            String retrievedAvailability = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_AVAILABILITY));
+            // Retrieve column indices
+            int nameIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_NAME);
+            int qualificationsIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_QUALIFICATIONS);
+            int experienceIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_EXPERIENCE);
+            int hourlyRateIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_RATE);
+            int availabilityIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_AVAILABILITY);
+            int idIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_ID);
+
+            // Get babysitter data only if columns are valid
+            if (nameIndex >= 0) name.setText(cursor.getString(nameIndex));
+            if (qualificationsIndex >= 0) qualifications.setText(cursor.getString(qualificationsIndex));
+            if (experienceIndex >= 0) experience.setText(String.valueOf(cursor.getInt(experienceIndex)));
+            if (hourlyRateIndex >= 0) hourly_rates.setText(String.valueOf(cursor.getDouble(hourlyRateIndex)));
+            if (availabilityIndex >= 0) availability.setText(cursor.getString(availabilityIndex));
 
             // Get babysitter_id
-            int babysitterId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_ID));
+            int babysitterId = idIndex >= 0 ? cursor.getInt(idIndex) : -1;
 
-            // Get rating and reviews number using the databaseHelper
-            double rating_avg = databaseHelper.getRatingByBabysitterId(babysitterId);
-            int review_num = databaseHelper.getReviewsNumByBabysitterId(babysitterId);
+            // Check babysitterId is valid before proceeding
+            if (babysitterId >= 0) {
+                double rating_avg = databaseHelper.getRatingByBabysitterId(babysitterId);
+                int review_num = databaseHelper.getReviewsNumByBabysitterId(babysitterId);
 
-            // Set the retrieved data to the EditTexts
-            name.setText(retrievedName);
-            qualifications.setText(retrievedQualifications);
-            experience.setText(String.valueOf(retrievedExperience));
-            hourly_rates.setText(String.valueOf(retrievedHourlyRates));
-            availability.setText(retrievedAvailability);
-            rating.setText(String.valueOf(rating_avg));
-            reviewNum.setText(String.valueOf(review_num));
+                // Set rating and review count to EditTexts
+                rating.setText(String.valueOf(rating_avg));
+                reviewNum.setText(String.valueOf(review_num));
+            }
 
-            // Close cursor
             cursor.close();
         }
-
     }
 
     // TextWatcher to monitor input changes
@@ -167,7 +169,10 @@ public class BabysitterProfileActivity extends AppCompatActivity {
         Cursor cursor = databaseHelper.getBabysitterByEmail(email);
         int babysitterId = -1;
         if (cursor != null && cursor.moveToFirst()) {
-            babysitterId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_ID));
+            int idIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_ID);
+            if (idIndex >= 0) {
+                babysitterId = cursor.getInt(idIndex);
+            }
             cursor.close();
         }
         return babysitterId;
