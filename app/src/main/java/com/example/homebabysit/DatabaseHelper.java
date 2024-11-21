@@ -76,7 +76,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_BABYSITTER_EMAIL + " TEXT, "
             + COLUMN_BABYSITTER_QUALIFICATIONS + " TEXT, "
             + COLUMN_BABYSITTER_EXPERIENCE + " INTEGER, "
-            + COLUMN_BABYSITTER_AVAILABILITY + " TEXT, "
+            + COLUMN_BABYSITTER_AVAILABILITY + " TEXT, "// 0: unavailable 1: available
             + COLUMN_BABYSITTER_RATE + " REAL, "
             + COLUMN_BABYSITTER_PHOTO + " BLOB" + ")";  // Assuming profile photo is stored as a blob
 
@@ -162,7 +162,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             babysitterValues.put(COLUMN_BABYSITTER_QUALIFICATIONS, "CPR, First Aid");
             babysitterValues.put(COLUMN_BABYSITTER_EXPERIENCE, 5);
             babysitterValues.put(COLUMN_BABYSITTER_RATE, 25.0);
-            babysitterValues.put(COLUMN_BABYSITTER_AVAILABILITY, "Weekdays 9am-5pm");
+            babysitterValues.put(COLUMN_BABYSITTER_AVAILABILITY, "1");
 
             db.insert(TABLE_BABYSITTERS, null, babysitterValues);
         }
