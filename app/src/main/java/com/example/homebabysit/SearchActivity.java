@@ -26,6 +26,11 @@ public class SearchActivity extends AppCompatActivity {
     private List<Babysitter> babysitterList = new ArrayList<>();
     private DatabaseHelper dbHelper;
 
+    // Filters for rating and availability
+    private int selectedMinRating = 0; // Replace with actual UI input
+    private int selectedMaxRating = 5; // Replace with actual UI input
+    private List<String> selectedAvailabilityDays = new ArrayList<>(); // Replace with actual UI input
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,9 +88,11 @@ public class SearchActivity extends AppCompatActivity {
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BABYSITTER_NAME));
                 String location = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BABYSITTER_LOCATION));
                 int experience = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BABYSITTER_EXPERIENCE));
-                double rate = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BABYSITTER_RATE));
+                double hourlyRate = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BABYSITTER_RATE));
+                String availability = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BABYSITTER_AVAILABILITY));
+                double averageRating = dbHelper.getRatingByBabysitterId(id);
 
-                Babysitter babysitter = new Babysitter(id, name, location, experience, rate);
+                Babysitter babysitter = new Babysitter(id, name, location, experience, hourlyRate, availability, averageRating);
                 babysitterList.add(babysitter);
             } while (cursor.moveToNext());
         }
@@ -96,18 +103,44 @@ public class SearchActivity extends AppCompatActivity {
 
     private void filter() {
         String searchText = searchBar.getText().toString().toLowerCase();
-        int experienceFilter = filterExperience.getSelectedItemPosition(); // Adjust logic based on your spinner setup
+
+        // Get selected experience level (0: any, 1: beginner, 2: intermediate, 3: expert)
+        int experienceFilter = filterExperience.getSelectedItemPosition();
 
         List<Babysitter> filteredList = new ArrayList<>();
         for (Babysitter babysitter : babysitterList) {
             boolean matchesSearch = babysitter.getName().toLowerCase().contains(searchText);
-            boolean matchesExperience = experienceFilter == 0 || Integer.parseInt(babysitter.getExperience()) >= experienceFilter;
 
-            if (matchesSearch && matchesExperience) {
+            boolean matchesExperience = (experienceFilter == 0) ||
+                    (experienceFilter == 1 && babysitter.getExperience() < 2) ||
+                    (experienceFilter == 2 && babysitter.getExperience() >= 2 && babysitter.getExperience() < 5) ||
+                    (experienceFilter == 3 && babysitter.getExperience() >= 5);
+
+            boolean matchesRating = (babysitter.getAverageRating() >= selectedMinRating &&
+                    babysitter.getAverageRating() <= selectedMaxRating);
+
+            boolean matchesAvailability = matchesSelectedDays(babysitter.getAvailability(), selectedAvailabilityDays);
+
+            if (matchesSearch && matchesExperience && matchesRating && matchesAvailability) {
                 filteredList.add(babysitter);
             }
         }
 
         adapter.updateList(filteredList);
     }
+
+    // Helper method to parse babysitter availability against selected days
+    private boolean matchesSelectedDays(String babysitterAvailability, List<String> selectedDays) {
+        // Babysitter availability is stored as comma-separated days like "Monday,Tuesday"
+        if (selectedDays.isEmpty()) {
+            return true; // If no days are selected, all babysitters match
+        }
+        for (String day : selectedDays) {
+            if (babysitterAvailability.toLowerCase().contains(day.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
+

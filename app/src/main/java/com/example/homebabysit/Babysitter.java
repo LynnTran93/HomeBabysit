@@ -3,29 +3,33 @@ package com.example.homebabysit;
 public class Babysitter {
     private int id;
     private String name;
-    private String experience;
     private String location;
-    private int age;
-    private double rating;
+    private int experience;
+    private double hourlyRate;
+    private String availability;
+    private double averageRating;
 
-    // Constructor with location
-    public Babysitter(int id, String name, String experience, String location, int age, double rating) {
+    // Constructor with all attributes
+    public Babysitter(int id, String name, String location, int experience, double hourlyRate,
+                      String availability, double averageRating) {
         this.id = id;
         this.name = name;
-        this.experience = experience;
         this.location = location;
-        this.age = age;
-        this.rating = rating;
+        this.experience = experience;
+        this.hourlyRate = hourlyRate;
+        this.availability = availability;
+        this.averageRating = averageRating;
     }
 
-    // Constructor without location (default location is set to "Unknown")
-    public Babysitter(int id, String name, String experience, int age, double rating) {
+    // Constructor with default values for some attributes
+    public Babysitter(int id, String name, int experience) {
         this.id = id;
         this.name = name;
         this.experience = experience;
-        this.age = age;
-        this.rating = rating;
-        this.location = "Unknown"; // Default value for location
+        this.location = "Unknown"; // Default value
+        this.hourlyRate = 0.0; // Default value
+        this.availability = "Not specified"; // Default value
+        this.averageRating = 0.0; // Default value
     }
 
     // Getters
@@ -37,23 +41,27 @@ public class Babysitter {
         return name;
     }
 
-    public String getExperience() {
-        return experience;
-    }
-
     public String getLocation() {
         return location;
     }
 
-    public int getAge() {
-        return age;
+    public int getExperience() {
+        return experience;
     }
 
-    public double getRating() {
-        return rating;
+    public double getHourlyRate() {
+        return hourlyRate;
     }
 
-    // Optional: Setters if you need to update any attributes later
+    public String getAvailability() {
+        return availability;
+    }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    // Setters
     public void setId(int id) {
         this.id = id;
     }
@@ -62,19 +70,23 @@ public class Babysitter {
         this.name = name;
     }
 
-    public void setExperience(String experience) {
-        this.experience = experience;
-    }
-
     public void setLocation(String location) {
         this.location = location;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setExperience(int experience) {
+        this.experience = experience;
     }
 
-    public void setRating(double rating) {
-        this.rating = rating;
+    public void setHourlyRate(double hourlyRate) {
+        this.hourlyRate = hourlyRate;
+    }
+
+    public void setAvailability(String availability) {
+        this.availability = availability;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
     }
 }
