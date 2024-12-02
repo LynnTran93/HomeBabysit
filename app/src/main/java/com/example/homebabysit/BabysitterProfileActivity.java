@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,9 +23,9 @@ public class BabysitterProfileActivity extends AppCompatActivity {
     private EditText qualifications;
     private EditText experience;
     private EditText hourly_rates;
-    private EditText availability;
     private EditText rating;
     private EditText reviewNum;
+    private Spinner availabilitySpinner;
     private DatabaseHelper databaseHelper;
     private Button profile_update_btn;
     private Button profile_return_btn;
@@ -44,7 +47,13 @@ public class BabysitterProfileActivity extends AppCompatActivity {
         qualifications = findViewById(R.id.qualifications);
         experience = findViewById(R.id.experience);
         hourly_rates = findViewById(R.id.hourly_rates);
-        availability = findViewById(R.id.availability);
+
+        availabilitySpinner = findViewById(R.id.availability_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.availability_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        availabilitySpinner.setAdapter(adapter);
+
         rating = findViewById(R.id.rating);
         reviewNum = findViewById(R.id.review_num);
         view_reviews_btn = findViewById(R.id.view_reviews_btn);
@@ -65,7 +74,6 @@ public class BabysitterProfileActivity extends AppCompatActivity {
         qualifications.addTextChangedListener(inputWatcher);
         experience.addTextChangedListener(inputWatcher);
         hourly_rates.addTextChangedListener(inputWatcher);
-        availability.addTextChangedListener(inputWatcher);
 
         profile_update_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,7 +82,9 @@ public class BabysitterProfileActivity extends AppCompatActivity {
                 String input_qualifications = qualifications.getText().toString();
                 int input_experience = Integer.parseInt(experience.getText().toString());
                 double input_hourly_rates = Double.parseDouble(hourly_rates.getText().toString());
-                String input_availability = availability.getText().toString();
+                String availability = availabilitySpinner.getSelectedItem().toString();
+                String input_availability = "0";
+                if (availability.equals("available")) input_availability = "1";
 
                 if (databaseHelper.updateBabysitterProfile(input_name, email, input_qualifications, input_experience, input_hourly_rates, input_availability)) {
                     Toast.makeText(BabysitterProfileActivity.this, "Update profile Successfully", Toast.LENGTH_SHORT).show();
@@ -99,42 +109,57 @@ public class BabysitterProfileActivity extends AppCompatActivity {
                 startActivity(intent); // Launch the ReviewsListActivity to show reviews
             }
         });
-    }
 
-    private void loadBabysitterData(String email) {
-        Cursor cursor = databaseHelper.getBabysitterByEmail(email);
-        if (cursor != null && cursor.moveToFirst()) {
-            // Retrieve column indices
-            int nameIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_NAME);
-            int qualificationsIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_QUALIFICATIONS);
-            int experienceIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_EXPERIENCE);
-            int hourlyRateIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_RATE);
-            int availabilityIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_AVAILABILITY);
-            int idIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_ID);
-
-            // Get babysitter data only if columns are valid
-            if (nameIndex >= 0) name.setText(cursor.getString(nameIndex));
-            if (qualificationsIndex >= 0) qualifications.setText(cursor.getString(qualificationsIndex));
-            if (experienceIndex >= 0) experience.setText(String.valueOf(cursor.getInt(experienceIndex)));
-            if (hourlyRateIndex >= 0) hourly_rates.setText(String.valueOf(cursor.getDouble(hourlyRateIndex)));
-            if (availabilityIndex >= 0) availability.setText(cursor.getString(availabilityIndex));
-
-            // Get babysitter_id
-            int babysitterId = idIndex >= 0 ? cursor.getInt(idIndex) : -1;
-
-            // Check babysitterId is valid before proceeding
-            if (babysitterId >= 0) {
-                double rating_avg = databaseHelper.getRatingByBabysitterId(babysitterId);
-                int review_num = databaseHelper.getReviewsNumByBabysitterId(babysitterId);
-
-                // Set rating and review count to EditTexts
-                rating.setText(String.valueOf(rating_avg));
-                reviewNum.setText(String.valueOf(review_num));
+        availabilitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                checkInputs();
             }
 
-            cursor.close();
-        }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
     }
+
+   private void loadBabysitterData(String email) {
+    Cursor cursor = databaseHelper.getBabysitterByEmail(email);
+    if (cursor != null && cursor.moveToFirst()) {
+        // Retrieve column indices
+        int nameIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_NAME);
+        int qualificationsIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_QUALIFICATIONS);
+        int experienceIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_EXPERIENCE);
+        int hourlyRateIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_RATE);
+        int availabilityIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_AVAILABILITY);
+        int idIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_BABYSITTER_ID);
+
+        // Populate the fields if columns are valid
+        if (nameIndex >= 0) name.setText(cursor.getString(nameIndex));
+        if (qualificationsIndex >= 0) qualifications.setText(cursor.getString(qualificationsIndex));
+        if (experienceIndex >= 0) experience.setText(String.valueOf(cursor.getInt(experienceIndex)));
+        if (hourlyRateIndex >= 0) hourly_rates.setText(String.valueOf(cursor.getDouble(hourlyRateIndex)));
+
+        if (availabilityIndex >= 0) {
+            String availability = cursor.getString(availabilityIndex);
+            String availabilityText = availability.equals("1") ? "available" : "unavailable";
+            int spinnerPosition = ((ArrayAdapter) availabilitySpinner.getAdapter()).getPosition(availabilityText);
+            availabilitySpinner.setSelection(spinnerPosition);
+        }
+
+        if (idIndex >= 0) {
+            int babysitterId = cursor.getInt(idIndex);
+            double rating_avg = databaseHelper.getRatingByBabysitterId(babysitterId);
+            int review_num = databaseHelper.getReviewsNumByBabysitterId(babysitterId);
+
+            // Set rating and review count to EditTexts
+            rating.setText(String.valueOf(rating_avg));
+            reviewNum.setText(String.valueOf(review_num));
+        }
+
+        cursor.close();
+    }
+}
 
     // TextWatcher to monitor input changes
     private final TextWatcher inputWatcher = new TextWatcher() {
@@ -157,12 +182,12 @@ public class BabysitterProfileActivity extends AppCompatActivity {
         String input_qualifications = qualifications.getText().toString().trim();
         String input_experience = experience.getText().toString().trim();
         String input_hourly_rates = hourly_rates.getText().toString().trim();
-        String input_availability = availability.getText().toString().trim();
+        String selectedAvailability = availabilitySpinner.getSelectedItem().toString();
 
         // Enable the button if all fields are filled
         profile_update_btn.setEnabled(!input_name.isEmpty() && !input_qualifications.isEmpty()
                 && !input_experience.isEmpty() && !input_hourly_rates.isEmpty()
-                && !input_availability.isEmpty());
+                && !selectedAvailability.isEmpty());
     }
 
     private int getBabysitterId() {

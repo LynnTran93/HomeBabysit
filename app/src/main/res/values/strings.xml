@@ -3,7 +3,6 @@
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
-    <string name="welcome_message">Welcome to Homebabysit App!</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
@@ -51,8 +50,8 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
-    <string name="title_activity_booking">BookingActivity</string>
-    <string name="title_activity_test_booking">TestBookingActivity</string>
-    <string name="enter_observations">enter_observations</string>
-    <string name="confirm_booking">confirm_booking</string>
+    <string-array name="availability_options">
+        <item>available</item>
+        <item>unavailable</item>
+    </string-array>
 </resources>
