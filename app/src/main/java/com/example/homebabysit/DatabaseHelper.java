@@ -42,6 +42,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_BABYSITTER_AVAILABILITY = "availability";  // New
     public static final String COLUMN_BABYSITTER_RATE = "hourly_rate";  // New
     public static final String COLUMN_BABYSITTER_PHOTO = "profile_photo";  // New
+    public static final String COLUMN_BABYSITTER_LOCATION = "location"; // New
+
 
     // Bookings Table Columns
     public static final String COLUMN_BOOKING_ID = "booking_id";
@@ -76,9 +78,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_BABYSITTER_EMAIL + " TEXT, "
             + COLUMN_BABYSITTER_QUALIFICATIONS + " TEXT, "
             + COLUMN_BABYSITTER_EXPERIENCE + " INTEGER, "
-            + COLUMN_BABYSITTER_AVAILABILITY + " TEXT, "// 0: unavailable 1: available
+            + COLUMN_BABYSITTER_AVAILABILITY + " TEXT, " // 0: unavailable 1: available
             + COLUMN_BABYSITTER_RATE + " REAL, "
-            + COLUMN_BABYSITTER_PHOTO + " BLOB" + ")";  // Assuming profile photo is stored as a blob
+            + COLUMN_BABYSITTER_LOCATION + " TEXT, "  // Added location column
+            + COLUMN_BABYSITTER_PHOTO + " BLOB" + ")"; // Assuming profile photo is stored as a blob
+
 
     // SQL to Create Bookings Table
     private static final String CREATE_TABLE_BOOKINGS = "CREATE TABLE " + TABLE_BOOKINGS + "("

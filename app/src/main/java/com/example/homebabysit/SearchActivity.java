@@ -3,6 +3,9 @@ package com.example.homebabysit;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,32 +24,33 @@ public class SearchActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private BabysitterAdapter adapter;
     private List<Babysitter> babysitterList = new ArrayList<>();
-    private List<Babysitter> filteredList = new ArrayList<>();
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        dbHelper = new DatabaseHelper(this);
         searchBar = findViewById(R.id.search_bar);
         filterExperience = findViewById(R.id.filter_experience);
         recyclerView = findViewById(R.id.recycler_view);
 
-        // Initialize RecyclerView and Adapter with an empty filteredList initially
-        adapter = new BabysitterAdapter(filteredList, babysitter -> {
-            // Handle babysitter click event here if needed
+        // Initialize RecyclerView and Adapter
+        adapter = new BabysitterAdapter(babysitterList, babysitter -> {
+            // Handle babysitter click event if needed
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // Load Babysitters from your database or dummy data
+        // Load babysitters from the database
         loadBabysitters();
 
-        // Set listeners for search and filter actions
+        // Search bar listener
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filter(); // Calls filter method whenever text changes
+                filter();
             }
 
             @Override
@@ -55,10 +60,11 @@ public class SearchActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
+        // Spinner filter listener
         filterExperience.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                filter(); // Calls filter method whenever a new experience level is selected
+                filter();
             }
 
             @Override
@@ -67,28 +73,41 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void loadBabysitters() {
-        babysitterList.add(new Babysitter("Jane Doe", "Intermediate", "Downtown"));
-        babysitterList.add(new Babysitter("John Smith", "Expert", "Uptown"));
-        babysitterList.add(new Babysitter("Alice Brown", "Beginner", "Suburbs"));
+        babysitterList.clear();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_BABYSITTERS, null);
 
-        // Initially, display all babysitters in filteredList
-        filteredList.addAll(babysitterList);
-        adapter.notifyDataSetChanged();
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BABYSITTER_ID));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BABYSITTER_NAME));
+                String location = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BABYSITTER_LOCATION));
+                int experience = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BABYSITTER_EXPERIENCE));
+                double rate = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BABYSITTER_RATE));
+
+                Babysitter babysitter = new Babysitter(id, name, location, experience, rate);
+                babysitterList.add(babysitter);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        adapter.updateList(babysitterList);
     }
 
     private void filter() {
         String searchText = searchBar.getText().toString().toLowerCase();
-        String experience = filterExperience.getSelectedItem().toString();
+        int experienceFilter = filterExperience.getSelectedItemPosition(); // Adjust logic based on your spinner setup
 
-        filteredList.clear();
-        for (Babysitter b : babysitterList) {
-            boolean matchesExperience = experience.equals("Any") || b.getExperience().equalsIgnoreCase(experience);
-            boolean matchesSearchText = b.getName().toLowerCase().contains(searchText) || b.getLocation().toLowerCase().contains(searchText);
+        List<Babysitter> filteredList = new ArrayList<>();
+        for (Babysitter babysitter : babysitterList) {
+            boolean matchesSearch = babysitter.getName().toLowerCase().contains(searchText);
+            boolean matchesExperience = experienceFilter == 0 || Integer.parseInt(babysitter.getExperience()) >= experienceFilter;
 
-            if (matchesExperience && matchesSearchText) {
-                filteredList.add(b);
+            if (matchesSearch && matchesExperience) {
+                filteredList.add(babysitter);
             }
         }
-        adapter.notifyDataSetChanged();
+
+        adapter.updateList(filteredList);
     }
 }
