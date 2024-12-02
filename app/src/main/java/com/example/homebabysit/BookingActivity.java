@@ -51,9 +51,10 @@ public class BookingActivity extends AppCompatActivity {
 
         // Initialize data
         babysitterList = new ArrayList<>();
-        babysitterList.add(new Babysitter("Babysitter A", "5 years", "New York"));
-        babysitterList.add(new Babysitter("Babysitter B", "3 years", "Los Angeles"));
-        babysitterList.add(new Babysitter("Babysitter C", "4 years", "Chicago"));
+        babysitterList.add(new Babysitter(25, "5 years", "New York", 4, 15.50));
+        babysitterList.add(new Babysitter(30, "3 years", "Los Angeles", 5, 18.00));
+        babysitterList.add(new Babysitter(28, "4 years", "Chicago", 4, 17.25));
+
 
         babysitterAvailability = new HashMap<>();
         Map<String, List<String>> availabilityA = new HashMap<>();
