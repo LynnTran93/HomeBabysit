@@ -6,16 +6,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.BabysitterViewHolder> {
 
-    private List<String> babysitters;
+    private List<Babysitter> babysitters;
     private final OnBabysitterClickListener onBabysitterClickListener;
-    private String selectedBabysitter;
 
-    public BabysitterAdapter(List<String> babysitters, OnBabysitterClickListener listener) {
-        this.babysitters = babysitters;
+    public BabysitterAdapter(List<Babysitter> babysitters, OnBabysitterClickListener listener) {
+        this.babysitters = new ArrayList<>(babysitters);
         this.onBabysitterClickListener = listener;
     }
 
@@ -28,12 +28,9 @@ public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.Ba
 
     @Override
     public void onBindViewHolder(@NonNull BabysitterViewHolder holder, int position) {
-        String babysitter = babysitters.get(position);
-        holder.textView.setText(babysitter);
-        holder.itemView.setOnClickListener(v -> {
-            selectedBabysitter = babysitter;
-            onBabysitterClickListener.onClick(babysitter);
-        });
+        Babysitter babysitter = babysitters.get(position);
+        holder.textView.setText(babysitter.getName());
+        holder.itemView.setOnClickListener(v -> onBabysitterClickListener.onClick(babysitter));
     }
 
     @Override
@@ -41,13 +38,13 @@ public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.Ba
         return babysitters.size();
     }
 
-    public void updateList(List<String> newList) {
-        babysitters = newList;
+    public void updateList(List<Babysitter> newList) {
+        babysitters = new ArrayList<>(newList);
         notifyDataSetChanged();
     }
 
     public interface OnBabysitterClickListener {
-        void onClick(String babysitter);
+        void onClick(Babysitter babysitter);
     }
 
     static class BabysitterViewHolder extends RecyclerView.ViewHolder {
