@@ -1,38 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    tools:context=".SearchActivity">
 
     <!-- Search Bar for entering babysitter name or location -->
     <EditText
         android:id="@+id/search_bar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Search babysitters..."
         android:inputType="text"
         android:padding="12dp"
-        android:background="@drawable/search_bar_background" />
-
+        android:background="@drawable/search_bar_background"
+        android:importantForAccessibility="yes"
+        android:contentDescription="Search bar for babysitters"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Filter Spinner for selecting experience level -->
     <Spinner
         android:id="@+id/filter_experience"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="12dp"
         android:minHeight="48dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp" />
-
+        android:importantForAccessibility="yes"
+        android:contentDescription="Filter by experience level"
+        app:layout_constraintTop_toBottomOf="@id/search_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_margin="16dp"/>
 
     <!-- RecyclerView for displaying the list of babysitters -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="12dp" />
+        android:importantForAccessibility="yes"
+        android:contentDescription="List of available babysitters"
+        app:layout_constraintTop_toBottomOf="@id/filter_experience"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_margin="16dp" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
