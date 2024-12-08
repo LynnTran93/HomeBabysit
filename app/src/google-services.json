@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "660134078419",
+    "project_id": "homebabysit-c9b05",
+    "storage_bucket": "homebabysit-c9b05.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660134078419:android:b45a43a4196321f37db126",
+        "android_client_info": {
+          "package_name": "com.example.homebabysit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDphHA1Z0jpoXIT5NJ6FBi6K4AsTrep8sM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

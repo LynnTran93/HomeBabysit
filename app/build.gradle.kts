@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -51,11 +52,17 @@ android {
 }
 
 dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.github.prolificinteractive:material-calendarview:1.4.3")
 
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.support.annotations)
+    implementation(libs.annotation)
+    implementation(libs.firebase.messaging)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.lifecycle.runtime.ktx)
@@ -66,8 +73,6 @@ dependencies {
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
     implementation(libs.recyclerview)
-    implementation("com.github.prolificinteractive:material-calendarview:1.4.3")
-
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

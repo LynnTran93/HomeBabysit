@@ -9,12 +9,14 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.homebabysit.PushNotificationSender;
 
 public class SignupActivity extends AppCompatActivity {
 
     private EditText etFirstName, etLastName, etUsername, etPassword, etEmail;
     private CheckBox cbCaregiver, cbSeekingCare;
     private Button btnRegister, btnReturnToLogin;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +46,11 @@ public class SignupActivity extends AppCompatActivity {
                     TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(email)) {
                 Toast.makeText(SignupActivity.this, "All fields are required", Toast.LENGTH_SHORT).show();
             } else {
+                Intent intent = getIntent();
+                String deviceToken = intent.getStringExtra("DEVICE_TOKEN");
                 // Proceed with user registration
-                Toast.makeText(SignupActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(SignupActivity.this, , Toast.LENGTH_SHORT).show();
+                PushNotificationSender.sendNotification(deviceToken, "Success", "Registration Successful");
                 startActivity(new Intent(SignupActivity.this, LoginActivity.class));
                 finish();
             }
