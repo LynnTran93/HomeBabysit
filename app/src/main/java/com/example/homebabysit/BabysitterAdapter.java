@@ -22,14 +22,15 @@ public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.Ba
     @NonNull
     @Override
     public BabysitterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_babysitter, parent, false);
         return new BabysitterViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull BabysitterViewHolder holder, int position) {
         Babysitter babysitter = babysitters.get(position);
-        holder.textView.setText(babysitter.getName());
+        holder.nameTextView.setText(babysitter.getName());
+        holder.locationTextView.setText(babysitter.getLocation());
         holder.itemView.setOnClickListener(v -> onBabysitterClickListener.onClick(babysitter));
     }
 
@@ -48,11 +49,12 @@ public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.Ba
     }
 
     static class BabysitterViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
+        TextView nameTextView, locationTextView;
 
         BabysitterViewHolder(View itemView) {
             super(itemView);
-            textView = itemView.findViewById(android.R.id.text1);
+            nameTextView = itemView.findViewById(R.id.text_babysitter_name);
+            locationTextView = itemView.findViewById(R.id.text_babysitter_location);
         }
     }
 }

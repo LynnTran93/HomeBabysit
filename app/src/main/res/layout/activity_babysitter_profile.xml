@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    android:padding="16dp"
+    android:background="#F9F9F9">
 
+    <!-- Title -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,14 +13,18 @@
         android:gravity="center"
         android:textSize="25sp"
         android:textStyle="bold"
+        android:textColor="#3F51B5"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"/>
 
+    <!-- Email Field (read-only) -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Email"
-        android:paddingStart="20dp" />
+        android:textStyle="bold"
+        android:paddingStart="10dp"
+        android:layout_marginBottom="4dp" />
 
     <EditText
         android:id="@+id/email"
@@ -29,142 +32,197 @@
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:enabled="false"
-        android:paddingStart="20dp" />
+        android:backgroundTint="@color/design_default_color_background"
+        android:padding="12dp"
+        android:hint="Enter your email" />
 
+    <!-- Name Field -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Name"
-        android:paddingStart="20dp" />
+        android:textStyle="bold"
+        android:paddingStart="10dp"
+        android:layout_marginTop="10dp" />
 
     <EditText
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:paddingStart="20dp" />
+        android:backgroundTint="@color/design_default_color_background"
+        android:padding="12dp"
+        android:hint="Enter your name" />
 
+    <!-- Qualifications Field -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Qualifications"
-        android:paddingStart="20dp" />
+        android:textStyle="bold"
+        android:paddingStart="10dp"
+        android:layout_marginTop="10dp" />
 
     <EditText
         android:id="@+id/qualifications"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:paddingStart="20dp" />
+        android:backgroundTint="@color/design_default_color_background"
+        android:padding="12dp"
+        android:hint="Enter your qualifications" />
 
+    <!-- Experience Field -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Experience"
-        android:paddingStart="20dp" />
+        android:textStyle="bold"
+        android:paddingStart="10dp"
+        android:layout_marginTop="10dp" />
 
     <EditText
         android:id="@+id/experience"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:paddingStart="20dp" />
+        android:backgroundTint="@color/design_default_color_background"
+        android:padding="12dp"
+        android:hint="Enter your experience in years" />
 
+    <!-- Hourly Rates Field -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hourly rates"
-        android:paddingStart="20dp" />
+        android:text="Hourly Rates"
+        android:textStyle="bold"
+        android:paddingStart="10dp"
+        android:layout_marginTop="10dp" />
 
     <EditText
         android:id="@+id/hourly_rates"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
-        android:paddingStart="20dp" />
+        android:backgroundTint="@color/design_default_color_background"
+        android:padding="12dp"
+        android:hint="Enter your hourly rate" />
 
+    <!-- Location Field -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Location"
+        android:textStyle="bold"
+        android:paddingStart="10dp"
+        android:layout_marginTop="10dp" />
+
+    <EditText
+        android:id="@+id/location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:backgroundTint="@color/design_default_color_background"
+        android:padding="12dp"
+        android:hint="Enter your location" />
+
+    <!-- Availability Field -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Availability"
-        android:paddingStart="20dp" />
+        android:textStyle="bold"
+        android:paddingStart="10dp"
+        android:layout_marginTop="10dp" />
 
-    <Spinner
-        android:id="@+id/availability_spinner"
+    <EditText
+        android:id="@+id/availability"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp" />
+        android:inputType="text"
+        android:backgroundTint="@color/design_default_color_background"
+        android:padding="12dp"
+        android:hint="Enter your availability" />
 
+    <!-- Rating Field (read-only) -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Rating ( 0 ~ 10 )"
-        android:paddingStart="20dp" />
+        android:text="Rating (0 - 10)"
+        android:textStyle="bold"
+        android:paddingStart="10dp"
+        android:layout_marginTop="10dp" />
 
     <EditText
         android:id="@+id/rating"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text"
+        android:inputType="numberDecimal"
         android:enabled="false"
-        android:paddingStart="20dp" />
+        android:backgroundTint="@color/design_default_color_background"
+        android:padding="12dp"
+        android:hint="Your rating (read-only)" />
 
+    <!-- Review Number Field -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Review number"
-        android:paddingStart="20dp" />
+        android:text="Review Count"
+        android:textStyle="bold"
+        android:paddingStart="10dp"
+        android:layout_marginTop="10dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp">
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp">
 
         <EditText
             android:id="@+id/review_num"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="text"
+            android:inputType="number"
             android:enabled="false"
-            android:text="0"
-            android:hint="Review number" />
+            android:backgroundTint="@color/design_default_color_background"
+            android:padding="12dp" />
 
         <Button
             android:id="@+id/view_reviews_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="View Reviews"
-            android:textColor="#FFFFFF"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/purple_500"
+            android:padding="12dp"
             android:layout_marginStart="10dp" />
     </LinearLayout>
 
-
+    <!-- Buttons -->
     <Button
         android:id="@+id/profile_update_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Update"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:text="Update Profile"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/teal_200"
         android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp" />
+        android:padding="16dp"
+        android:layout_marginTop="20dp" />
 
     <Button
         android:id="@+id/profile_return_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Return"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/red"
         android:textStyle="bold"
+        android:padding="16dp"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="20dp" />
 
 </LinearLayout>
+

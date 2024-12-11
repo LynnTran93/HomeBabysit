@@ -24,9 +24,6 @@ public class MyEventDecorator implements DayViewDecorator {
 
     @Override
     public void decorate(DayViewFacade view) {
-        // Add multiple DotSpans to create a larger dot effect
-        view.addSpan(new DotSpan(10, color)); // Larger dot size
-        view.addSpan(new DotSpan(12, color)); // Add another layer to make it appear bigger
-        view.addSpan(new DotSpan(14, color)); // Optional: add one more layer
+        view.addSpan(new DotSpan(10, color));
     }
 }

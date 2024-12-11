@@ -13,7 +13,6 @@ public class Review {
         this.reviewText = reviewText;
     }
 
-    // Getter methods
     public String getReviewerName() {
         return reviewerName;
     }
@@ -28,15 +27,5 @@ public class Review {
 
     public String getReviewText() {
         return reviewText;
-    }
-
-    @Override
-    public String toString() {
-        return "Review{" +
-                "reviewerName='" + reviewerName + '\'' +
-                ", reviewTime='" + reviewTime + '\'' +
-                ", rating=" + rating +
-                ", reviewText='" + reviewText + '\'' +
-                '}';
     }
 }
