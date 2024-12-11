@@ -1,46 +1,83 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/welcome_text"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Welcome to Homebabysit App!"
-        android:textSize="18sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="24dp" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="16dp">
 
-    <Button
-        android:id="@+id/parent_profile_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Test Parent Profile"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@id/welcome_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        <!-- App Name -->
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HomeBabysit"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textColor="#3F51B5"
+            android:layout_marginBottom="12dp" />
 
-    <Button
-        android:id="@+id/babysitter_profile_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Test Babysitter Profile"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@id/parent_profile_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        <!-- Tagline -->
+        <TextView
+            android:id="@+id/tvTagline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Babysitting Management made easy!"
+            android:textSize="18sp"
+            android:textColor="#757575"
+            android:layout_marginBottom="24dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Login Button -->
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Log in"
+            android:background="@drawable/button_background"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="12dp" />
 
+        <!-- Sign up Button -->
+        <Button
+            android:id="@+id/signup_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign up"
+            android:background="@drawable/button_background"
+            android:textColor="#3F51B5"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Forgot Password Button -->
+        <Button
+            android:id="@+id/btnCantSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Can't Sign in?"
+            android:background="@drawable/button_background"
+            android:textColor="#757575"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Login as Parent Button (Test) -->
+        <Button
+            android:id="@+id/btnLoginAsParent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login As Parent (For Test Only)"
+            android:background="@drawable/button_background"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Login as Babysitter Button (Test) -->
+        <Button
+            android:id="@+id/btnLoginAsBabysitter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login As Babysitter (For Test Only)"
+            android:background="@drawable/button_background"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+</ScrollView>
