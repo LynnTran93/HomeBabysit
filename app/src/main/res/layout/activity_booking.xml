@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="#A3E4DB">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,50 +10,85 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Search Babysitters -->
         <SearchView
             android:id="@+id/searchViewBabysitters"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:imeOptions="actionNext"
-            android:queryHint="Search Babysitters" />
+            android:queryHint="Search Babysitters"
+            android:background="@drawable/search_bar_background"
+            android:layout_marginBottom="16dp" />
 
+        <!-- Babysitters List -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewBabysitters"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginTop="16dp" />
+            android:layout_height="200dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/recycler_view_background" />
+
+        <!-- Calendar View -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select a Date"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            android:textColor="#3F51B5" />
 
         <com.prolificinteractive.materialcalendarview.MaterialCalendarView
             android:id="@+id/materialCalendarView"
-            android:layout_width="370dp"
-            android:layout_height="300dp"
-            app:mcv_showOtherDates="all" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
 
+        <!-- Time Slot Selection -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose a Time Slot"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            android:textColor="#3F51B5" />
 
         <Spinner
             android:id="@+id/spinnerTimeSlots"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginBottom="16dp" />
+
+        <!-- Observations -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Additional Observations"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            android:textColor="#3F51B5" />
 
         <EditText
             android:id="@+id/editTextObservations"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/enter_observations"
-            android:inputType="textMultiLine"
-            android:imeOptions="actionNext"
-            android:padding="16dp"
-            android:layout_marginTop="16dp" />
+            android:hint="Enter any specific notes"
+            android:background="@drawable/edit_text_background"
+            android:padding="12dp"
+            android:layout_marginBottom="24dp" />
 
+        <!-- Confirm Booking Button -->
         <Button
             android:id="@+id/buttonConfirmBooking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/confirm_booking"
+            android:text="Confirm Booking"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:backgroundTint="#3F51B5"
             android:padding="16dp"
-            android:layout_marginTop="24dp" />
+            android:layout_marginBottom="16dp" />
 
     </LinearLayout>
 </ScrollView>

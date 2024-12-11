@@ -3,128 +3,96 @@ package com.example.homebabysit;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 public class ParentProfileActivity extends AppCompatActivity {
 
-    private EditText name;
-    private String email;
-    private EditText emailField;
-    private EditText location;
-    private EditText childrenNum;
-    private EditText preferences;
+    private EditText nameField, locationField, childrenNumField, preferencesField;
+    private Button updateButton, returnButton;
     private DatabaseHelper databaseHelper;
-    private Button profile_update_btn;
-    private Button profile_return_btn;
+    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parent_profile);
 
-        Intent fromLogin = getIntent();
-        email = fromLogin.getStringExtra("EMAIL");
+        initializeUI();
 
-        // Initialize UI elements and the DatabaseHelper
-        profile_update_btn = findViewById(R.id.profile_update_button);
-        profile_return_btn = findViewById(R.id.profile_return_button);
-        name = findViewById(R.id.name);
-        emailField = findViewById(R.id.email);
-        location = findViewById(R.id.location);
-        childrenNum = findViewById(R.id.number_of_children);
-        preferences = findViewById(R.id.babysitter_preferences);
+        Intent intent = getIntent();
+        email = intent.getStringExtra("EMAIL");
 
-        emailField.setText(email);
-        emailField.setEnabled(false); // Email field is read-only
+        if (!TextUtils.isEmpty(email)) {
+            loadParentData();
+        } else {
+            Toast.makeText(this, "Email not provided", Toast.LENGTH_SHORT).show();
+            finish();
+        }
 
-        databaseHelper = new DatabaseHelper(this);
-
-        // Load existing parent data
-        loadParentData(email);
-
-        // Initially disable the button
-        profile_update_btn.setEnabled(false);
-
-        // Add TextWatchers to listen for text changes
-        name.addTextChangedListener(inputWatcher);
-        location.addTextChangedListener(inputWatcher);
-        childrenNum.addTextChangedListener(inputWatcher);
-        preferences.addTextChangedListener(inputWatcher);
-
-        profile_update_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String input_name = name.getText().toString();
-                String input_location = location.getText().toString();
-                int input_childrenNum = Integer.parseInt(childrenNum.getText().toString());
-                String input_preferences = preferences.getText().toString();
-
-                if (databaseHelper.updateParentProfile(input_name, email, input_location, input_childrenNum, input_preferences)) {
-                    Toast.makeText(ParentProfileActivity.this, "Update profile Successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ParentProfileActivity.this, "Fail to update Profile!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        profile_return_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish(); // Closes this activity and returns to the previous one
-            }
-        });
+        updateButton.setOnClickListener(v -> updateProfile());
+        returnButton.setOnClickListener(v -> finish());
     }
 
-    private void loadParentData(String email) {
+    private void initializeUI() {
+        nameField = findViewById(R.id.name);
+        locationField = findViewById(R.id.location);
+        childrenNumField = findViewById(R.id.number_of_children);
+        preferencesField = findViewById(R.id.babysitter_preferences);
+        updateButton = findViewById(R.id.profile_update_button);
+        returnButton = findViewById(R.id.profile_return_button);
+        databaseHelper = new DatabaseHelper(this);
+    }
+
+    private void loadParentData() {
         Cursor cursor = databaseHelper.getParentByEmail(email);
         if (cursor != null && cursor.moveToFirst()) {
-            // Retrieve column indices for each field
-            int nameIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_NAME);
-            int locationIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_LOCATION);
-            int childrenNumIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_CHILDREN);
-            int preferencesIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_PREFERENCES);
-
-            // Only set data if column indices are valid
-            if (nameIndex >= 0) name.setText(cursor.getString(nameIndex));
-            if (locationIndex >= 0) location.setText(cursor.getString(locationIndex));
-            if (childrenNumIndex >= 0) childrenNum.setText(String.valueOf(cursor.getInt(childrenNumIndex)));
-            if (preferencesIndex >= 0) preferences.setText(cursor.getString(preferencesIndex));
-
-            // Close cursor
+            nameField.setText(getColumnValue(cursor, DatabaseHelper.COLUMN_PARENT_NAME, "Unknown"));
+            locationField.setText(getColumnValue(cursor, DatabaseHelper.COLUMN_PARENT_LOCATION, "Unknown"));
+            childrenNumField.setText(String.valueOf(getColumnValue(cursor, DatabaseHelper.COLUMN_PARENT_CHILDREN, 0)));
+            preferencesField.setText(getColumnValue(cursor, DatabaseHelper.COLUMN_PARENT_PREFERENCES, "None"));
             cursor.close();
+        } else {
+            Toast.makeText(this, "Failed to load parent data", Toast.LENGTH_SHORT).show();
         }
     }
 
-    // TextWatcher to monitor input changes
-    private final TextWatcher inputWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    private void updateProfile() {
+        String name = nameField.getText().toString().trim();
+        String location = locationField.getText().toString().trim();
+        String children = childrenNumField.getText().toString().trim();
+        String preferences = preferencesField.getText().toString().trim();
 
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            // Call a method to check if all inputs are filled
-            checkInputs();
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(location) || TextUtils.isEmpty(children) || TextUtils.isEmpty(preferences)) {
+            Toast.makeText(this, "All fields must be filled", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        @Override
-        public void afterTextChanged(Editable s) {}
-    };
+        try {
+            int numChildren = Integer.parseInt(children);
+            boolean isUpdated = databaseHelper.updateParentProfile(name, email, location, numChildren, preferences);
 
-    // Method to check if all inputs are filled
-    private void checkInputs() {
-        String input_name = name.getText().toString().trim();
-        String input_location = location.getText().toString().trim();
-        String input_childrenNum = childrenNum.getText().toString().trim();
-        String input_preferences = preferences.getText().toString().trim();
+            Toast.makeText(this, isUpdated ? "Profile updated successfully" : "Failed to update profile", Toast.LENGTH_SHORT).show();
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid number of children", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        // Enable the button if all fields are filled
-        profile_update_btn.setEnabled(!input_name.isEmpty() && !input_location.isEmpty()
-                && !input_childrenNum.isEmpty() && !input_preferences.isEmpty());
+    private <T> T getColumnValue(Cursor cursor, String columnName, T defaultValue) {
+        int columnIndex = cursor.getColumnIndex(columnName);
+        if (columnIndex != -1) {
+            if (defaultValue instanceof String) {
+                return (T) cursor.getString(columnIndex);
+            } else if (defaultValue instanceof Integer) {
+                return (T) Integer.valueOf(cursor.getInt(columnIndex));
+            } else if (defaultValue instanceof Double) {
+                return (T) Double.valueOf(cursor.getDouble(columnIndex));
+            }
+        }
+        return defaultValue;
     }
 }

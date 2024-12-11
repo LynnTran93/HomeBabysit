@@ -1,8 +1,5 @@
 package com.example.homebabysit;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,17 +7,22 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
 
     private EditText searchBar;
-    private Spinner filterExperience;
+    private Spinner experienceFilterSpinner;
     private RecyclerView recyclerView;
     private BabysitterAdapter adapter;
+
+    private DatabaseHelper databaseHelper;
     private List<Babysitter> babysitterList = new ArrayList<>();
-    private List<Babysitter> filteredList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,67 +30,67 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         searchBar = findViewById(R.id.search_bar);
-        filterExperience = findViewById(R.id.filter_experience);
+        experienceFilterSpinner = findViewById(R.id.filter_experience);
         recyclerView = findViewById(R.id.recycler_view);
 
-        // Initialize RecyclerView and Adapter with an empty filteredList initially
-        adapter = new BabysitterAdapter(filteredList, babysitter -> {
-            // Handle babysitter click event here if needed
-        });
+        databaseHelper = new DatabaseHelper(this);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new BabysitterAdapter(babysitterList, babysitter -> {
+            // Handle babysitter selection (optional)
+        });
         recyclerView.setAdapter(adapter);
 
-        // Load Babysitters from your database or dummy data
         loadBabysitters();
 
-        // Set listeners for search and filter actions
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filter(); // Calls filter method whenever text changes
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterBabysitters();
+            }
 
             @Override
             public void afterTextChanged(Editable s) {}
         });
 
-        filterExperience.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        experienceFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                filter(); // Calls filter method whenever a new experience level is selected
+                filterBabysitters();
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+                // No action needed here
+            }
         });
     }
 
     private void loadBabysitters() {
-        babysitterList.add(new Babysitter("Jane Doe", "Intermediate", "Downtown"));
-        babysitterList.add(new Babysitter("John Smith", "Expert", "Uptown"));
-        babysitterList.add(new Babysitter("Alice Brown", "Beginner", "Suburbs"));
-
-        // Initially, display all babysitters in filteredList
-        filteredList.addAll(babysitterList);
-        adapter.notifyDataSetChanged();
+        babysitterList = databaseHelper.getAllBabysitters();
+        adapter.updateList(babysitterList);
     }
 
-    private void filter() {
+    private void filterBabysitters() {
         String searchText = searchBar.getText().toString().toLowerCase();
-        String experience = filterExperience.getSelectedItem().toString();
+        int experienceFilter = experienceFilterSpinner.getSelectedItemPosition();
 
-        filteredList.clear();
-        for (Babysitter b : babysitterList) {
-            boolean matchesExperience = experience.equals("Any") || b.getExperience().equalsIgnoreCase(experience);
-            boolean matchesSearchText = b.getName().toLowerCase().contains(searchText) || b.getLocation().toLowerCase().contains(searchText);
+        List<Babysitter> filteredList = new ArrayList<>();
+        for (Babysitter babysitter : babysitterList) {
+            boolean matchesSearch = babysitter.getName().toLowerCase().contains(searchText);
+            boolean matchesExperience = (experienceFilter == 0) ||
+                    (experienceFilter == 1 && babysitter.getExperience() < 2) ||
+                    (experienceFilter == 2 && babysitter.getExperience() >= 2 && babysitter.getExperience() < 5) ||
+                    (experienceFilter == 3 && babysitter.getExperience() >= 5);
 
-            if (matchesExperience && matchesSearchText) {
-                filteredList.add(b);
+            if (matchesSearch && matchesExperience) {
+                filteredList.add(babysitter);
             }
         }
-        adapter.notifyDataSetChanged();
+        adapter.updateList(filteredList);
     }
 }
+
