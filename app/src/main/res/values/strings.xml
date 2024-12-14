@@ -6,6 +6,9 @@
     <string name="confirm_booking">Confirm Booking</string>
     <string name="title_activity_test_booking">Test Booking</string>
 
+    <!-- Title for the Booking Activity -->
+    <string name="title_activity_booking">Booking</string>
+
     <!-- Other existing string resources -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
@@ -55,9 +58,17 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
-    <string name="title_activity_booking" />
+
     <string name="babysitter_name">Babysitter Name</string>
     <string name="location">Location</string>
+    <string name="log_in">Log in</string>
+    <string name="can_t_sign_in">Can\'t Sign in?</string>
+    <string name="login_as_babysitter_for_test_only">Login As Babysitter (For Test Only)</string>
+    <string name="sign_up">Sign up</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="welcome">Welcome!</string>
+    <string name="babysitting_management_made_easy">Babysitting Management made easy!</string>
 
     <string-array name="availability_options">
         <item>available</item>

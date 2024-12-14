@@ -15,13 +15,14 @@ public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.Ba
     private final OnBabysitterClickListener onBabysitterClickListener;
 
     public BabysitterAdapter(List<Babysitter> babysitters, OnBabysitterClickListener listener) {
-        this.babysitters = new ArrayList<>(babysitters);
+        this.babysitters = babysitters != null ? new ArrayList<>(babysitters) : new ArrayList<>();
         this.onBabysitterClickListener = listener;
     }
 
     @NonNull
     @Override
     public BabysitterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflate the layout for each item in the RecyclerView
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_babysitter, parent, false);
         return new BabysitterViewHolder(view);
     }
@@ -29,8 +30,12 @@ public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.Ba
     @Override
     public void onBindViewHolder(@NonNull BabysitterViewHolder holder, int position) {
         Babysitter babysitter = babysitters.get(position);
-        holder.nameTextView.setText(babysitter.getName());
-        holder.locationTextView.setText(babysitter.getLocation());
+
+        // Set the name and location of the babysitter
+        holder.nameTextView.setText(babysitter.getName() != null ? babysitter.getName() : "No Name Available");
+        holder.locationTextView.setText(babysitter.getLocation() != null ? babysitter.getLocation() : "No Location Available");
+
+        // Handle item click
         holder.itemView.setOnClickListener(v -> onBabysitterClickListener.onClick(babysitter));
     }
 
@@ -39,15 +44,18 @@ public class BabysitterAdapter extends RecyclerView.Adapter<BabysitterAdapter.Ba
         return babysitters.size();
     }
 
+    // Method to update the list of babysitters in the adapter
     public void updateList(List<Babysitter> newList) {
         babysitters = new ArrayList<>(newList);
         notifyDataSetChanged();
     }
 
+    // Interface for handling babysitter item click
     public interface OnBabysitterClickListener {
         void onClick(Babysitter babysitter);
     }
 
+    // ViewHolder class that holds the views for each item
     static class BabysitterViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, locationTextView;
 

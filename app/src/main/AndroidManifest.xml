@@ -19,12 +19,6 @@
 
         <!-- Activities -->
         <activity
-            android:name=".TestBookingActivity"
-            android:exported="true"
-            android:label="@string/title_activity_test_booking"
-            android:theme="@style/Theme.HomeBabysit" />
-
-        <activity
             android:name=".BookingActivity"
             android:exported="true"
             android:label="@string/title_activity_booking"

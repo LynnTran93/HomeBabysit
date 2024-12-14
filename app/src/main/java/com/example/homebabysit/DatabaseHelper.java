@@ -1,5 +1,6 @@
 package com.example.homebabysit;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,13 +18,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_BABYSITTERS = "babysitters";
     public static final String COLUMN_BABYSITTER_ID = "id";
     public static final String COLUMN_BABYSITTER_NAME = "name";
+    public static final String COLUMN_BABYSITTER_EMAIL = "email";
     public static final String COLUMN_BABYSITTER_LOCATION = "location";
     public static final String COLUMN_BABYSITTER_QUALIFICATIONS = "qualifications";
     public static final String COLUMN_BABYSITTER_EXPERIENCE = "experience";
     public static final String COLUMN_BABYSITTER_RATE = "hourly_rate";
     public static final String COLUMN_BABYSITTER_AVAILABILITY = "availability";
     public static final String COLUMN_BABYSITTER_AVERAGE_RATING = "average_rating";
-    public static final String COLUMN_BABYSITTER_EMAIL = "email";
 
     // Reviews table
     public static final String TABLE_REVIEWS = "reviews";
@@ -53,7 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String CREATE_BABYSITTERS_TABLE = "CREATE TABLE " + TABLE_BABYSITTERS + " (" +
                 COLUMN_BABYSITTER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_BABYSITTER_NAME + " TEXT, " +
-                COLUMN_BABYSITTER_EMAIL + " TEXT," +
+                COLUMN_BABYSITTER_EMAIL + " TEXT, " +
                 COLUMN_BABYSITTER_LOCATION + " TEXT, " +
                 COLUMN_BABYSITTER_QUALIFICATIONS + " TEXT, " +
                 COLUMN_BABYSITTER_EXPERIENCE + " INTEGER, " +
@@ -96,59 +97,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Babysitter> getAllBabysitters() {
         List<Babysitter> babysitters = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
 
-        Cursor cursor = db.query(TABLE_BABYSITTERS,
-                null, // Select all columns
-                null, null, null, null,
-                COLUMN_BABYSITTER_NAME + " ASC"); // Sort by name
+        try {
+            cursor = db.query(TABLE_BABYSITTERS, null, null, null, null, null, COLUMN_BABYSITTER_NAME + " ASC");
 
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_ID));
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_NAME));
-                String location = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_LOCATION));
-                int experience = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_EXPERIENCE));
-                double hourlyRate = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_RATE));
-                String availability = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_AVAILABILITY));
-                double averageRating = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_AVERAGE_RATING));
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_ID));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_NAME));
+                    String location = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_LOCATION));
+                    int experience = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_EXPERIENCE));
+                    double hourlyRate = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_RATE));
+                    String availability = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_AVAILABILITY));
+                    double averageRating = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_BABYSITTER_AVERAGE_RATING));
 
-                babysitters.add(new Babysitter(id, name, location, experience, hourlyRate, availability, averageRating));
-            } while (cursor.moveToNext());
-            cursor.close();
+                    babysitters.add(new Babysitter(id, name, location, experience, hourlyRate, availability, averageRating));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
         }
 
-        db.close();
         return babysitters;
     }
-
-    public List<Review> getReviewsByBabysitterId(int babysitterId) {
-        List<Review> reviews = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        // Query the reviews table for the given babysitterId
-        Cursor cursor = db.query(TABLE_REVIEWS,
-                null, // Select all columns
-                COLUMN_BABYSITTER_REVIEW_ID + " = ?", // Where babysitter_id matches
-                new String[]{String.valueOf(babysitterId)}, // Bind babysitterId to query
-                null, null, COLUMN_REVIEW_TIME + " DESC"); // Sort by review time (optional)
-
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                String reviewerName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REVIEWER_NAME));
-                String reviewTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REVIEW_TIME));
-                int rating = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RATING));
-                String reviewText = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REVIEW_TEXT));
-
-                // Create a new Review object and add it to the list
-                reviews.add(new Review(reviewerName, reviewTime, rating, reviewText));
-            } while (cursor.moveToNext());
-            cursor.close();
-        }
-
-        db.close();
-        return reviews;
-    }
-
 
     // Get babysitter by email
     public Cursor getBabysitterByEmail(String email) {
@@ -156,36 +133,74 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.rawQuery("SELECT * FROM " + TABLE_BABYSITTERS + " WHERE email = ?", new String[]{email});
     }
 
-    // Update babysitter profile
+    // Update babysitter profile using ContentValues
     public boolean updateBabysitterProfile(String name, String email, String qualifications, int experience, double hourlyRate, String location, String availability) {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("UPDATE " + TABLE_BABYSITTERS +
-                        " SET " + COLUMN_BABYSITTER_NAME + " = ?, " +
-                        COLUMN_BABYSITTER_QUALIFICATIONS + " = ?, " +
-                        COLUMN_BABYSITTER_EXPERIENCE + " = ?, " +
-                        COLUMN_BABYSITTER_RATE + " = ?, " +
-                        COLUMN_BABYSITTER_LOCATION + " = ?, " +
-                        COLUMN_BABYSITTER_AVAILABILITY + " = ? WHERE " + COLUMN_BABYSITTER_EMAIL + " = ?",  // Use the email column
-                new Object[]{name, qualifications, experience, hourlyRate, location, availability, email});
-        return true;
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_BABYSITTER_NAME, name);
+        values.put(COLUMN_BABYSITTER_QUALIFICATIONS, qualifications);
+        values.put(COLUMN_BABYSITTER_EXPERIENCE, experience);
+        values.put(COLUMN_BABYSITTER_RATE, hourlyRate);
+        values.put(COLUMN_BABYSITTER_LOCATION, location);
+        values.put(COLUMN_BABYSITTER_AVAILABILITY, availability);
+
+        int rowsAffected = db.update(TABLE_BABYSITTERS, values, COLUMN_BABYSITTER_EMAIL + " = ?", new String[]{email});
+        db.close();
+
+        return rowsAffected > 0;
     }
 
+    // Get reviews for a specific babysitter
+    public List<Review> getReviewsByBabysitterId(int babysitterId) {
+        List<Review> reviews = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
 
-    // Method to get parent by email
+        try {
+            cursor = db.query(TABLE_REVIEWS, null, COLUMN_BABYSITTER_REVIEW_ID + " = ?", new String[]{String.valueOf(babysitterId)}, null, null, COLUMN_REVIEW_TIME + " DESC");
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    String reviewerName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REVIEWER_NAME));
+                    String reviewTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REVIEW_TIME));
+                    int rating = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RATING));
+                    String reviewText = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REVIEW_TEXT));
+
+                    reviews.add(new Review(reviewerName, reviewTime, rating, reviewText));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return reviews;
+    }
+
+    // Get parent by email
     public Cursor getParentByEmail(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM " + TABLE_PARENTS + " WHERE " + COLUMN_PARENT_EMAIL + " = ?", new String[]{email});
     }
 
-    // Method to update parent profile
+    // Update parent profile
     public boolean updateParentProfile(String name, String email, String location, int childrenNum, String preferences) {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("UPDATE " + TABLE_PARENTS +
-                        " SET " + COLUMN_PARENT_NAME + " = ?, " +
-                        COLUMN_PARENT_LOCATION + " = ?, " +
-                        COLUMN_PARENT_CHILDREN + " = ?, " +
-                        COLUMN_PARENT_PREFERENCES + " = ? WHERE " + COLUMN_PARENT_EMAIL + " = ?",
-                new Object[]{name, location, childrenNum, preferences, email});
-        return true;
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PARENT_NAME, name);
+        values.put(COLUMN_PARENT_LOCATION, location);
+        values.put(COLUMN_PARENT_CHILDREN, childrenNum);
+        values.put(COLUMN_PARENT_PREFERENCES, preferences);
+
+        int rowsAffected = db.update(TABLE_PARENTS, values, COLUMN_PARENT_EMAIL + " = ?", new String[]{email});
+        db.close();
+
+        return rowsAffected > 0;
     }
 }
