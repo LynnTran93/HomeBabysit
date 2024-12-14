@@ -5,6 +5,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,6 +44,7 @@ public class SearchActivity extends AppCompatActivity {
 
         loadBabysitters();
 
+        // Setup Search functionality
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -56,6 +58,7 @@ public class SearchActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
+        // Setup experience filter spinner
         experienceFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -67,6 +70,8 @@ public class SearchActivity extends AppCompatActivity {
                 // No action needed here
             }
         });
+
+        setupExperienceFilterSpinner();
     }
 
     private void loadBabysitters() {
@@ -92,5 +97,11 @@ public class SearchActivity extends AppCompatActivity {
         }
         adapter.updateList(filteredList);
     }
-}
 
+    private void setupExperienceFilterSpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.experience_levels, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        experienceFilterSpinner.setAdapter(adapter);
+    }
+}

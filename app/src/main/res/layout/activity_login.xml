@@ -1,4 +1,5 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#A3E4DB"
@@ -15,7 +16,7 @@
             android:id="@+id/tvAppName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome!"
+            android:text="@string/welcome"
             android:textSize="30sp"
             android:textStyle="bold"
             android:fontFamily="@font/dancingscript"
@@ -26,56 +27,67 @@
             android:id="@+id/tvTagline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Babysitting Management made easy!"
+            android:layout_marginBottom="24dp"
+            android:text="@string/babysitting_management_made_easy"
+            android:textColor="#795548"
             android:textSize="18sp"
-            android:textColor="#757575"
-            android:layout_marginBottom="24dp" />
+            tools:ignore="TextViewEdits" />
 
         <EditText
             android:id="@+id/etUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username"
+            android:layout_marginBottom="12dp"
+            android:autofillHints="username"
             android:background="@drawable/edit_text_background"
-            android:padding="12dp"
-            android:layout_marginBottom="12dp" />
+            android:hint="@string/username"
+            android:inputType="textPersonName"
+        android:padding="12dp"
+        android:textColorHint="#757575"
+        tools:ignore="TextFields,VisualLintTextFieldSize" />
 
         <EditText
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
-            android:inputType="textPassword"
+            android:layout_marginBottom="24dp"
+            android:autofillHints=""
             android:background="@drawable/edit_text_background"
+            android:hint="@string/password"
+            android:inputType="textPassword"
             android:padding="12dp"
-            android:layout_marginBottom="24dp" />
+            android:textColorHint="#757575"
+            tools:ignore="VisualLintTextFieldSize" />
 
         <Button
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Log in"
+            android:text="@string/log_in"
             android:background="@drawable/button_background"
             android:textColor="#FFFFFF"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="12dp"
+            tools:ignore="VisualLintButtonSize" />
 
         <Button
             android:id="@+id/btnSignup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sign up"
+            android:text="@string/sign_up"
             android:background="@drawable/button_background"
             android:textColor="#FFFFFF"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="12dp"
+            tools:ignore="VisualLintButtonSize" />
 
         <Button
             android:id="@+id/btnCantSignIn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Can't Sign in?"
+            android:text="@string/can_t_sign_in"
             android:background="@drawable/button_background"
             android:textColor="#FFFFFF"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="24dp"
+            tools:ignore="VisualLintButtonSize" />
 
         <Button
             android:id="@+id/btnLoginAsParent"
@@ -84,14 +96,16 @@
             android:text="Login As Parent (For Test Only)"
             android:background="@drawable/button_background"
             android:textColor="#FFFFFF"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="12dp"
+            tools:ignore="HardcodedText,VisualLintButtonSize" />
 
         <Button
             android:id="@+id/btnLoginAsBabysitter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Login As Babysitter (For Test Only)"
+            android:text="@string/login_as_babysitter_for_test_only"
             android:background="@drawable/button_background"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            tools:ignore="VisualLintButtonSize" />
     </LinearLayout>
 </ScrollView>
