@@ -58,7 +58,7 @@ The HomeBabysit Android Application simplifies childcare management by connectin
 
 1. **Clone the Repository**:  
    ```bash
-   git clone https://github.com/your-repository/homebabysit-app.git
+   git clone https://github.com/LynnTran93/HomeBabysit/tree/master
 Open in Android Studio:
 
 Import the project into Android Studio.
